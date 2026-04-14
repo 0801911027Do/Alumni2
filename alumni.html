@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="ระบบติดตามศิษย์เก่า (Alumni Tracking System) สำหรับจัดการ ดูแล และติดตามสถานะการทำงานของศิษย์เก่า"
+    />
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>ระบบติดตามศิษย์เก่า | Alumni Tracking System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/chart.umd.js"></script>
+
+    <link rel="stylesheet" href="alumni.css" />
+  </head>
+
+  <body>
+    <div id="global-loader" class="hidden">
+      <div class="spinner"></div>
+      <div id="loader-text">กำลังซิงค์ข้อมูล...</div>
+    </div>
+
+    <div id="loginPage" class="hidden">
+      <div class="login-box">
+        <div class="brand-icon">
+          <i data-lucide="graduation-cap" style="width: 56px; height: 56px"></i>
+        </div>
+        <h2>ระบบติดตามศิษย์เก่า</h2>
+        <p class="subtitle">Alumni Tracking System</p>
+        <div id="loginError" class="alert-error hidden"></div>
+        <div class="form-group">
+          <label for="inpUser">ชื่อผู้ใช้งาน</label>
+          <input
+            type="text"
+            id="inpUser"
+            placeholder="กรอก username"
+            autocomplete="off"
+          />
+        </div>
+        <div class="form-group">
+          <label for="inpPass">รหัสผ่าน</label>
+          <input type="password" id="inpPass" placeholder="กรอกรหัสผ่าน" />
+        </div>
+        <button
+          class="btn btn-primary btn-full"
+          onclick="doLogin()"
+          style="margin-top: 12px; font-size: 16px"
+        >
+          เข้าสู่ระบบ
+        </button>
+      </div>
+    </div>
+
+    <div id="app" class="hidden">
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="logo">
+            <i
+              data-lucide="graduation-cap"
+              style="width: 24px; height: 24px"
+            ></i>
+          </div>
+          <div class="brand-text">
+            <h1>Alumni Hub</h1>
+            <p>System Management</p>
+          </div>
+        </div>
+        <nav class="sidebar-nav" id="sideNav"></nav>
+      </aside>
+
+      <div class="main">
+        <div class="topbar">
+          <div>
+            <h2
+              id="topbarTitle"
+              style="
+                font-size: 22px;
+                font-weight: 800;
+                color: var(--text);
+                letter-spacing: -0.3px;
+              "
+            ></h2>
+            <p
+              id="topbarSub"
+              style="
+                font-size: 13.5px;
+                color: var(--text-muted);
+                margin-top: 2px;
+              "
+            ></p>
+          </div>
+
+          <div class="nav-right">
+            <button
+              id="topAddBtn"
+              class="btn btn-success btn-sm hidden"
+              onclick="openAddForm()"
+            >
+              <i
+                data-lucide="plus-circle"
+                style="width: 16px; height: 16px"
+              ></i>
+              <span class="hide-on-mobile">เพิ่มข้อมูลใหม่</span>
+            </button>
+
+            <div class="panel-wrap" id="notifWrap">
+              <button class="icon-btn" id="notifBtn">
+                <i data-lucide="bell" style="width: 20px; height: 20px"></i>
+                <div class="notif-dot" id="notifDot"></div>
+              </button>
+              <div class="panel" id="notifPanel">
+                <div class="notif-header">
+                  <span class="notif-title">การแจ้งเตือน</span>
+                  <span class="notif-clear" id="markAllRead">ล้างทั้งหมด</span>
+                </div>
+                <div class="notif-list">
+                  <div class="notif-item unread">
+                    <div class="n-icon">
+                      <i
+                        data-lucide="party-popper"
+                        style="width: 18px; height: 18px"
+                      ></i>
+                    </div>
+                    <div>
+                      <div class="n-msg">
+                        <strong>ยินดีต้อนรับ!</strong>
+                        เข้าสู่ระบบติดตามศิษย์เก่า
+                      </div>
+                      <div class="n-time">เพิ่งเกิดขึ้น</div>
+                    </div>
+                  </div>
+                  <div class="notif-item">
+                    <div
+                      class="n-icon"
+                      style="
+                        background: var(--success-soft);
+                        color: var(--success);
+                      "
+                    >
+                      <i
+                        data-lucide="check-circle"
+                        style="width: 18px; height: 18px"
+                      ></i>
+                    </div>
+                    <div>
+                      <div class="n-msg">
+                        ซิงค์ข้อมูลกับฐานข้อมูลล่าสุดสำเร็จแล้ว
+                      </div>
+                      <div class="n-time">เมื่อสักครู่</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="notif-footer" onclick="closeAllPanels()">
+                  ซ่อนการแจ้งเตือน
+                </div>
+              </div>
+            </div>
+
+            <div class="nav-divider"></div>
+
+            <div class="panel-wrap" id="profileWrap">
+              <button class="profile-trigger" id="profileBtn">
+                <div class="profile-avatar">
+                  <i data-lucide="user" style="width: 18px; height: 18px"></i>
+                </div>
+                <span class="trigger-name" id="topUserName">ผู้ใช้งาน</span>
+                <i
+                  data-lucide="chevron-down"
+                  class="chevron"
+                  style="width: 16px; height: 16px; margin-right: 4px"
+                ></i>
+              </button>
+
+              <div class="panel" id="profilePanel">
+                <div class="panel-user">
+                  <div
+                    class="profile-avatar"
+                    style="
+                      width: 44px;
+                      height: 44px;
+                      background: linear-gradient(
+                        135deg,
+                        var(--primary-light),
+                        #8b5cf6
+                      );
+                      color: #fff;
+                    "
+                  >
+                    <i
+                      data-lucide="shield-check"
+                      style="width: 22px; height: 22px"
+                    ></i>
+                  </div>
+                  <div>
+                    <div class="panel-user-name" id="dropUserName">
+                      ชื่อผู้ใช้
+                    </div>
+                    <div class="panel-user-role" id="dropUserRole">
+                      สิทธิ์การเข้าถึง
+                    </div>
+                  </div>
+                </div>
+                <div class="panel-section">
+                  <div
+                    class="menu-item"
+                    onclick="
+                      closeAllPanels();
+                      navTo('dash');
+                    "
+                  >
+                    <i
+                      data-lucide="layout-dashboard"
+                      style="
+                        width: 18px;
+                        height: 18px;
+                        color: var(--text-muted);
+                      "
+                    ></i>
+                    ภาพรวมระบบ
+                  </div>
+                  <div
+                    class="menu-item"
+                    onclick="
+                      closeAllPanels();
+                      navTo('students');
+                    "
+                  >
+                    <i
+                      data-lucide="users"
+                      style="
+                        width: 18px;
+                        height: 18px;
+                        color: var(--text-muted);
+                      "
+                    ></i>
+                    ฐานข้อมูลศิษย์เก่า
+                  </div>
+                </div>
+                <div class="panel-divider"></div>
+                <div class="panel-section">
+                  <div class="menu-item danger" onclick="doLogout()">
+                    <i
+                      data-lucide="log-out"
+                      style="width: 18px; height: 18px"
+                    ></i>
+                    ออกจากระบบ
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="pageDash" class="content fade-in"></div>
+
+        <div
+          id="pageStudents"
+          class="hidden"
+          style="
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 76px);
+            padding: 32px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+          "
+        >
+          <div class="filter-bar">
+            <div
+              style="
+                display: flex;
+                gap: 16px;
+                flex-wrap: wrap;
+                align-items: center;
+                width: 100%;
+              "
+            >
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="ค้นหาด้วย ชื่อ, นามสกุล, รหัสบัตร, บริษัท..."
+                oninput="renderTable()"
+              />
+              <div
+                style="
+                  display: flex;
+                  gap: 8px;
+                  background: var(--bg);
+                  padding: 6px;
+                  border-radius: 14px;
+                  overflow-x: auto;
+                "
+                id="filter-status-group"
+              >
+                <button
+                  class="filter-btn active"
+                  style="white-space: nowrap"
+                  onclick="setFilterStatus('ทั้งหมด', this)"
+                >
+                  ทั้งหมด
+                </button>
+                <button
+                  class="filter-btn"
+                  style="white-space: nowrap"
+                  onclick="setFilterStatus('ทำงาน', this)"
+                >
+                  ทำงาน
+                </button>
+                <button
+                  class="filter-btn"
+                  style="white-space: nowrap"
+                  onclick="setFilterStatus('ศึกษาต่อ', this)"
+                >
+                  ศึกษาต่อ
+                </button>
+                <button
+                  class="filter-btn"
+                  style="white-space: nowrap"
+                  onclick="setFilterStatus('ว่างงาน', this)"
+                >
+                  ว่างงาน
+                </button>
+                <button
+                  class="filter-btn"
+                  style="white-space: nowrap"
+                  onclick="setFilterStatus('ไม่จบการศึกษา', this)"
+                >
+                  ไม่จบ/พ้นสภาพ
+                </button>
+              </div>
+              <select
+                class="filter-select"
+                id="yearFilter"
+                onchange="renderTable()"
+              >
+                <option value="">ทุกรุ่นที่จบ (พ.ศ.)</option>
+              </select>
+              <button
+                class="btn btn-outline"
+                onclick="fetchData(true)"
+                title="รีเฟรชข้อมูลล่าสุด"
+              >
+                <i
+                  data-lucide="refresh-cw"
+                  style="width: 16px; height: 16px"
+                ></i>
+                <span class="hide-on-mobile">รีเฟรช</span>
+              </button>
+              <span
+                id="rowCount"
+                style="
+                  font-size: 14px;
+                  font-weight: 700;
+                  color: var(--text-muted);
+                  flex-shrink: 0;
+                  margin-left: auto;
+                  background: var(--bg);
+                  padding: 10px 16px;
+                  border-radius: 12px;
+                "
+              ></span>
+            </div>
+
+            <div
+              style="
+                background: var(--bg);
+                padding: 16px 20px;
+                border-radius: 16px;
+                border: 1px solid var(--border);
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                width: 100%;
+                margin-top: 8px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  gap: 12px;
+                  align-items: center;
+                  flex-wrap: wrap;
+                "
+              >
+                <span
+                  style="
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: var(--text);
+                    min-width: 40px;
+                  "
+                  >คณะ:</span
+                >
+                <div
+                  id="filter-fac-btns"
+                  style="display: flex; gap: 10px; flex-wrap: wrap"
+                ></div>
+              </div>
+              <div
+                id="filter-br-container"
+                class="hidden"
+                style="
+                  display: flex;
+                  gap: 12px;
+                  align-items: center;
+                  flex-wrap: wrap;
+                "
+              >
+                <span
+                  style="
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: var(--text);
+                    min-width: 40px;
+                  "
+                  >สาขา:</span
+                >
+                <div
+                  id="filter-br-btns"
+                  style="display: flex; gap: 10px; flex-wrap: wrap"
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-wrap" style="flex: 1">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 60px; text-align: center">#</th>
+                  <th>ชื่อ-นามสกุล</th>
+                  <th>คณะ / สาขา</th>
+                  <th>รุ่นปี (พ.ศ.) / เพศ</th>
+                  <th>ข้อมูลติดต่อ</th>
+                  <th>สถานะ</th>
+                  <th>บริษัท / ตำแหน่งที่ทำ</th>
+                  <th>เงินเดือน</th>
+                  <th>ระยะเวลาได้งาน</th>
+                  <th style="min-width: 160px; text-align: center">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="studentTbody"></tbody>
+            </table>
+            <div id="emptyState" class="empty-state hidden">
+              <i
+                data-lucide="search-x"
+                class="empty-icon"
+                style="width: 72px; height: 72px"
+              ></i>
+              <div>ไม่พบข้อมูลศิษย์เก่าในระบบ</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="modalBackdrop"
+      class="modal-backdrop hidden"
+      onclick="closeAllModals()"
+    >
+      <div
+        id="modalDetail"
+        class="modal-box modal-lg hidden"
+        onclick="event.stopPropagation()"
+      >
+        <div class="detail-header" id="detailHeader"></div>
+        <div
+          class="modal-body"
+          id="detailBody"
+          style="background: var(--bg); padding: 24px"
+        ></div>
+        <div class="modal-footer" id="detailFooter"></div>
+      </div>
+
+      <div
+        id="modalForm"
+        class="modal-box modal-lg hidden"
+        onclick="event.stopPropagation()"
+      >
+        <div class="modal-header">
+          <h3 id="formTitle"></h3>
+          <button class="modal-close" onclick="closeAllModals()">
+            <i data-lucide="x" style="width: 20px; height: 20px"></i>
+          </button>
+        </div>
+        <div
+          class="modal-body"
+          id="formBody"
+          style="padding: 32px; background: var(--bg)"
+        ></div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-outline"
+            style="padding: 12px 24px"
+            onclick="closeAllModals()"
+          >
+            ยกเลิก
+          </button>
+          <button
+            id="btnSave"
+            class="btn btn-success"
+            style="padding: 12px 24px"
+            onclick="saveStudent()"
+          >
+            <i data-lucide="save" style="width: 18px; height: 18px"></i>
+            บันทึกข้อมูลศิษย์เก่า
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="modalConfirm"
+        class="modal-box modal-sm hidden"
+        onclick="event.stopPropagation()"
+      >
+        <div class="modal-body">
+          <div class="confirm-icon">
+            <i
+              data-lucide="alert-triangle"
+              style="width: 72px; height: 72px"
+            ></i>
+          </div>
+          <div class="confirm-title">ยืนยันการลบข้อมูล</div>
+          <div class="confirm-desc" id="confirmDesc"></div>
+          <div style="display: flex; gap: 16px">
+            <button
+              class="btn btn-outline"
+              style="flex: 1; padding: 14px"
+              onclick="closeAllModals()"
+            >
+              ยกเลิก
+            </button>
+            <button
+              class="btn btn-danger"
+              style="flex: 1; padding: 14px"
+              onclick="confirmDelete()"
+            >
+              <i data-lucide="trash-2" style="width: 18px; height: 18px"></i>
+              ยืนยันลบทันที
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="modalCompany"
+        class="modal-box modal-md hidden"
+        onclick="event.stopPropagation()"
+      >
+        <div
+          class="detail-header"
+          id="coHeader"
+          style="
+            background: linear-gradient(
+              135deg,
+              var(--primary) 0%,
+              #1e293b 100%
+            );
+            padding: 24px 32px;
+            border-radius: 24px 24px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+          "
+        ></div>
+        <div
+          class="modal-body"
+          id="coBody"
+          style="
+            padding: 24px;
+            max-height: 65vh;
+            overflow-y: auto;
+            background: var(--bg);
+          "
+        ></div>
+      </div>
+
+      <div
+        id="modalGenericList"
+        class="modal-box modal-lg hidden"
+        onclick="event.stopPropagation()"
+      >
+        <div class="modal-header-fancy">
+          <div>
+            <h2
+              id="listModalTitleText"
+              style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 24px;
+                font-weight: 800;
+                margin-bottom: 6px;
+              "
+            >
+              <i
+                id="listModalIcon"
+                data-lucide="users"
+                style="width: 28px; height: 28px"
+              ></i>
+              รายชื่อ
+            </h2>
+            <div
+              id="listModalSub"
+              style="font-size: 15px; opacity: 0.9; font-weight: 500"
+            ></div>
+          </div>
+          <button class="modal-close-fancy" onclick="closeAllModals()">
+            <i data-lucide="x" style="width: 20px; height: 20px"></i>
+          </button>
+        </div>
+        <div
+          class="modal-body"
+          id="listModalBody"
+          style="
+            padding: 24px 32px;
+            background: var(--bg);
+            max-height: 65vh;
+            overflow-y: auto;
+          "
+        ></div>
+      </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script src="alumni.js"></script>
+  </body>
+</html>
