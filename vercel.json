@@ -2,28 +2,55 @@
   "version": 2,
   "name": "alumni-tracking-system",
   "public": true,
-  "buildCommand": "npm run build || echo 'No build step needed'",
   "builds": [
     {
-      "src": "*.html",
+      "src": "alumni.html",
       "use": "@vercel/static"
     },
     {
-      "src": "*.css",
+      "src": "alumni.css",
       "use": "@vercel/static"
     },
     {
-      "src": "*.js",
+      "src": "alumni.js",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
+      "src": "/alumni.css",
+      "dest": "/alumni.css",
+      "headers": {
+        "cache-control": "public, max-age=3600",
+        "Content-Type": "text/css; charset=utf-8"
+      }
+    },
+    {
+      "src": "/alumni.js",
+      "dest": "/alumni.js",
+      "headers": {
+        "cache-control": "public, max-age=3600",
+        "Content-Type": "application/javascript; charset=utf-8"
+      }
+    },
+    {
+      "src": "/alumni.html",
+      "dest": "/alumni.html",
+      "headers": {
+        "cache-control": "public, max-age=3600",
+        "Content-Type": "text/html; charset=utf-8"
+      }
+    },
+    {
       "src": "/(.*)",
-      "dest": "/alumni.html"
+      "dest": "/alumni.html",
+      "headers": {
+        "cache-control": "no-cache, no-store, must-revalidate"
+      }
     }
   ],
   "env": {
     "NODE_ENV": "production"
-  }
+  },
+  "buildCommand": "echo 'Static site'"
 }

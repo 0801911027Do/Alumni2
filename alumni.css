@@ -7,9 +7,11 @@
 html,
 body {
   font-family: "Sarabun", sans-serif;
+  background: #f8fafc;
   background: var(--bg);
   min-height: 100vh;
   font-size: 14.5px;
+  color: #0f172a;
   color: var(--text);
   -webkit-font-smoothing: antialiased;
 }
