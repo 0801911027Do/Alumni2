@@ -198,31 +198,13 @@ async function callAPI(payload = null) {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload),
-          mode: "cors"
         }
-      : { 
-          method: "GET",
-          mode: "cors"
-        };
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
-    
-    const response = await fetch(API_URL, {
-      ...reqOptions,
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP Error: ${response.status}`);
-    }
+      : { method: "GET" };
+    const response = await fetch(API_URL, reqOptions);
     return await response.json();
   } catch (error) {
     console.error("API Error:", error);
-    if (error.name === 'AbortError') {
-      return { status: "error", message: "API request timeout" };
-    }
-    return { status: "error", message: error.message || "Connection failed" };
+    return { status: "error", message: error.message };
   }
 }
 
