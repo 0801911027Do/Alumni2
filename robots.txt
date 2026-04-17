@@ -1,0 +1,22 @@
+# Alumni Tracking System - Robots Exclusion Standard
+# For more information, see https://www.robotstxt.org/
+
+User-agent: *
+Allow: /
+Allow: /alumni.html
+Allow: /alumni.css
+Allow: /alumni.js
+
+# Disallow sensitive/private paths
+Disallow: /admin/
+Disallow: /api/private/
+Disallow: /backup/
+Disallow: /.env
+Disallow: /.git/
+
+# Crawl delay to be respectful to server
+Crawl-delay: 1
+
+# Sitemaps
+Sitemap: https://your-domain.com/sitemap.xml
+
