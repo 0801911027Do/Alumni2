@@ -7,19 +7,190 @@
       name="description"
       content="ระบบติดตามศิษย์เก่า (Alumni Tracking System) สำหรับจัดการ ดูแล และติดตามสถานะการทำงานของศิษย์เก่า"
     />
-
+    <meta name="robots" content="index, follow" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>ระบบติดตามศิษย์เก่า | Alumni Tracking System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/chart.umd.js"></script>
-
-    <link rel="stylesheet" href="alumni.css" />
+    <!-- Critical login CSS inlined for faster FCP/LCP -->
+    <style>
+      :root {
+        --primary: #0f172a;
+        --accent: #2563eb;
+        --accent-soft: #eff6ff;
+        --accent-glow: rgba(37, 99, 235, 0.2);
+        --danger: #ef4444;
+        --danger-soft: #fef2f2;
+        --bg: #f8fafc;
+        --text: #0f172a;
+        --text-muted: #64748b;
+      }
+      
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      
+      html, body {
+        font-family: "Sarabun", sans-serif;
+        background: var(--bg);
+        min-height: 100vh;
+        font-size: 14.5px;
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+      }
+      
+      button, input, select {
+        font-family: "Sarabun", sans-serif;
+      }
+      
+      button {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: none;
+        border: none;
+        outline: none;
+      }
+      
+      #loginPage {
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(135deg, var(--primary) 0%, #1e293b 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+      
+      .login-box {
+        background: #fff;
+        border-radius: 24px;
+        padding: 48px 40px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+        animation: fadeUp 0.4s ease;
+      }
+      
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      .login-box .brand-icon {
+        display: flex;
+        justify-content: center;
+        color: var(--accent);
+        margin-bottom: 20px;
+      }
+      
+      .login-box h2 {
+        text-align: center;
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 6px;
+      }
+      
+      .login-box .subtitle {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 15px;
+        margin-bottom: 32px;
+        font-weight: 500;
+      }
+      
+      .form-group {
+        margin-bottom: 16px;
+      }
+      
+      .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 8px;
+      }
+      
+      .form-group input {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid #cbd5e1;
+        font-size: 14.5px;
+        outline: none;
+        background: #fff;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        color: var(--text);
+      }
+      
+      .form-group input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+      }
+      
+      .btn {
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-size: 14.5px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      
+      .btn:active {
+        transform: scale(0.97);
+      }
+      
+      .btn-primary {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+      }
+      
+      .btn-primary:hover {
+        background: #1d4ed8;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+      }
+      
+      .btn-full {
+        width: 100%;
+        padding: 14px;
+      }
+      
+      .alert-error {
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: var(--danger-soft);
+        border: 1px solid #fecaca;
+        color: var(--danger);
+        font-size: 14px;
+        margin-bottom: 20px;
+        line-height: 1.5;
+        font-weight: 600;
+      }
+      
+      .hidden {
+        display: none !important;
+      }
+    </style>
+    <!-- Full stylesheet deferred -->
+    <link rel="stylesheet" href="alumni.css" media="print" onload="this.media='all'" />
   </head>
 
   <body>
@@ -268,22 +439,16 @@
             display: flex;
             flex-direction: column;
             height: calc(100vh - 76px);
-            padding: 32px;
+            padding: 28px;
             max-width: 1600px;
             margin: 0 auto;
             width: 100%;
+            gap: 20px;
+            overflow: hidden;
           "
         >
           <div class="filter-bar">
-            <div
-              style="
-                display: flex;
-                gap: 16px;
-                flex-wrap: wrap;
-                align-items: center;
-                width: 100%;
-              "
-            >
+            <div>
               <input
                 type="text"
                 id="searchInput"
@@ -295,9 +460,10 @@
                   display: flex;
                   gap: 8px;
                   background: var(--bg);
-                  padding: 6px;
+                  padding: 8px;
                   border-radius: 14px;
                   overflow-x: auto;
+                  flex-wrap: wrap;
                 "
                 id="filter-status-group"
               >
@@ -345,15 +511,17 @@
                 <option value="">ทุกรุ่นที่จบ (พ.ศ.)</option>
               </select>
               <button
+                id="refreshBtn"
                 class="btn btn-outline"
-                onclick="fetchData(true)"
+                onclick="handleRefresh()"
                 title="รีเฟรชข้อมูลล่าสุด"
               >
                 <i
+                  id="refreshIcon"
                   data-lucide="refresh-cw"
                   style="width: 16px; height: 16px"
                 ></i>
-                <span class="hide-on-mobile">รีเฟรช</span>
+                <span class="hide-on-mobile" id="refreshText">รีเฟรช</span>
               </button>
               <span
                 id="rowCount"
@@ -370,25 +538,15 @@
               ></span>
             </div>
 
-            <div
-              style="
-                background: var(--bg);
-                padding: 16px 20px;
-                border-radius: 16px;
-                border: 1px solid var(--border);
-                display: flex;
-                flex-direction: column;
-                gap: 12px;
-                width: 100%;
-                margin-top: 8px;
-              "
-            >
+            <div style="width: 100%;">
               <div
                 style="
                   display: flex;
                   gap: 12px;
                   align-items: center;
                   flex-wrap: wrap;
+                  margin-bottom: 12px;
+                  padding-top: 12px;
                 "
               >
                 <span
@@ -396,9 +554,9 @@
                     font-size: 14px;
                     font-weight: 700;
                     color: var(--text);
-                    min-width: 40px;
+                    min-width: 45px;
                   "
-                  >คณะ:</span
+                  ><i data-lucide="filter" style="width:14px; height:14px; margin-right:6px; display:inline-block; vertical-align:text-bottom;"></i>คณะ:</span
                 >
                 <div
                   id="filter-fac-btns"
@@ -420,9 +578,9 @@
                     font-size: 14px;
                     font-weight: 700;
                     color: var(--text);
-                    min-width: 40px;
+                    min-width: 45px;
                   "
-                  >สาขา:</span
+                  ><i data-lucide="git-branch" style="width:14px; height:14px; margin-right:6px; display:inline-block; vertical-align:text-bottom;"></i>สาขา:</span
                 >
                 <div
                   id="filter-br-btns"
@@ -634,6 +792,8 @@
 
     <div id="toast"></div>
 
-    <script src="alumni.js"></script>
+    <!-- Deferred scripts for better LCP performance -->
+    <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script defer src="alumni.js"></script>
   </body>
 </html>
