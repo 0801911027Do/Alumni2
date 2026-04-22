@@ -5,22 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="ระบบติดตามศิษย์เก่า (Alumni Tracking System) สำหรับจัดการ ดูแล และติดตามสถานะการทำงานของศิษย์เก่า"
+      content="ระบบติดตามนิสิตนักศึกษา (Alumni Tracking System) สำหรับจัดการ ดูแล และติดตามสถานะการทำงานของนิสิตนักศึกษา"
     />
-    <meta name="robots" content="index, follow" />
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>ระบบติดตามศิษย์เก่า | Alumni Tracking System</title>
+    <title>ระบบติดตามนิสิตนักศึกษา | Alumni Tracking System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/chart.umd.js" defer></script>
 
-    <link rel="stylesheet" href="alumni.css" />
+    <link rel="stylesheet" href="./alumni.css" />
+    <style>
+      html, body {
+        background-color: #f8fafc;
+        color: #0f172a;
+      }
+    </style>
   </head>
 
   <body>
+    <noscript>
+      <div style="padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin: 20px;">
+        <strong>ข้อผิดพลาด:</strong> กรุณาเปิดใช้งาน JavaScript เพื่อใช้ระบบนี้
+      </div>
+    </noscript>
+    
     <div id="global-loader" class="hidden">
       <div class="spinner"></div>
       <div id="loader-text">กำลังซิงค์ข้อมูล...</div>
@@ -31,7 +45,7 @@
         <div class="brand-icon">
           <i data-lucide="graduation-cap" style="width: 56px; height: 56px"></i>
         </div>
-        <h2>ระบบติดตามศิษย์เก่า</h2>
+        <h2>ระบบติดตามนิสิตนักศึกษา</h2>
         <p class="subtitle">Alumni Tracking System</p>
         <div id="loginError" class="alert-error hidden"></div>
         <div class="form-group">
@@ -97,31 +111,6 @@
           </div>
 
           <div class="nav-right">
-            <input
-              type="file"
-              id="excelUploadInput"
-              accept=".xlsx, .xls, .csv"
-              class="hidden"
-              onchange="handleFileSelect(event)"
-            />
-
-            <button
-              id="topImportBtn"
-              class="btn btn-outline btn-sm hidden"
-              style="
-                border-color: var(--primary-light);
-                color: var(--primary-light);
-                background: #fff;
-              "
-              onclick="openRealGooglePicker()"
-            >
-              <i
-                data-lucide="file-spreadsheet"
-                style="width: 16px; height: 16px"
-              ></i>
-              <span class="hide-on-mobile">นำเข้า Excel</span>
-            </button>
-
             <button
               id="topAddBtn"
               class="btn btn-success btn-sm hidden"
@@ -133,6 +122,59 @@
               ></i>
               <span class="hide-on-mobile">เพิ่มข้อมูลใหม่</span>
             </button>
+
+            <div class="panel-wrap" id="notifWrap">
+              <button class="icon-btn" id="notifBtn">
+                <i data-lucide="bell" style="width: 20px; height: 20px"></i>
+                <div class="notif-dot" id="notifDot"></div>
+              </button>
+              <div class="panel" id="notifPanel">
+                <div class="notif-header">
+                  <span class="notif-title">การแจ้งเตือน</span>
+                  <span class="notif-clear" id="markAllRead">ล้างทั้งหมด</span>
+                </div>
+                <div class="notif-list">
+                  <div class="notif-item unread">
+                    <div class="n-icon">
+                      <i
+                        data-lucide="party-popper"
+                        style="width: 18px; height: 18px"
+                      ></i>
+                    </div>
+                    <div>
+                      <div class="n-msg">
+                        <strong>ยินดีต้อนรับ!</strong>
+                        เข้าสู่ระบบติดตามนิสิตนักศึกษา
+                      </div>
+                      <div class="n-time">เพิ่งเกิดขึ้น</div>
+                    </div>
+                  </div>
+                  <div class="notif-item">
+                    <div
+                      class="n-icon"
+                      style="
+                        background: var(--success-soft);
+                        color: var(--success);
+                      "
+                    >
+                      <i
+                        data-lucide="check-circle"
+                        style="width: 18px; height: 18px"
+                      ></i>
+                    </div>
+                    <div>
+                      <div class="n-msg">
+                        ซิงค์ข้อมูลกับฐานข้อมูลล่าสุดสำเร็จแล้ว
+                      </div>
+                      <div class="n-time">เมื่อสักครู่</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="notif-footer" onclick="closeAllPanels()">
+                  ซ่อนการแจ้งเตือน
+                </div>
+              </div>
+            </div>
 
             <div class="nav-divider"></div>
 
@@ -211,7 +253,7 @@
                         color: var(--text-muted);
                       "
                     ></i>
-                    ฐานข้อมูลศิษย์เก่า
+                    ฐานข้อมูลนิสิตนักศึกษา
                   </div>
                 </div>
                 <div class="panel-divider"></div>
@@ -238,16 +280,22 @@
             display: flex;
             flex-direction: column;
             height: calc(100vh - 76px);
-            padding: 28px;
+            padding: 32px;
             max-width: 1600px;
             margin: 0 auto;
             width: 100%;
-            gap: 20px;
-            overflow: hidden;
           "
         >
           <div class="filter-bar">
-            <div>
+            <div
+              style="
+                display: flex;
+                gap: 16px;
+                flex-wrap: wrap;
+                align-items: center;
+                width: 100%;
+              "
+            >
               <input
                 type="text"
                 id="searchInput"
@@ -259,10 +307,9 @@
                   display: flex;
                   gap: 8px;
                   background: var(--bg);
-                  padding: 8px;
+                  padding: 6px;
                   border-radius: 14px;
                   overflow-x: auto;
-                  flex-wrap: wrap;
                 "
                 id="filter-status-group"
               >
@@ -310,17 +357,15 @@
                 <option value="">ทุกรุ่นที่จบ (พ.ศ.)</option>
               </select>
               <button
-                id="refreshBtn"
                 class="btn btn-outline"
-                onclick="handleRefresh()"
+                onclick="fetchData(true)"
                 title="รีเฟรชข้อมูลล่าสุด"
               >
                 <i
-                  id="refreshIcon"
                   data-lucide="refresh-cw"
                   style="width: 16px; height: 16px"
                 ></i>
-                <span class="hide-on-mobile" id="refreshText">รีเฟรช</span>
+                <span class="hide-on-mobile">รีเฟรช</span>
               </button>
               <span
                 id="rowCount"
@@ -337,16 +382,25 @@
               ></span>
             </div>
 
-            <div style="width: 100%">
+            <div
+              style="
+                background: var(--bg);
+                padding: 16px 20px;
+                border-radius: 16px;
+                border: 1px solid var(--border);
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                width: 100%;
+                margin-top: 8px;
+              "
+            >
               <div
-                id="filter-br-container"
                 style="
                   display: flex;
                   gap: 12px;
                   align-items: center;
                   flex-wrap: wrap;
-                  margin-bottom: 12px;
-                  padding-top: 12px;
                 "
               >
                 <span
@@ -354,21 +408,34 @@
                     font-size: 14px;
                     font-weight: 700;
                     color: var(--text);
-                    min-width: 45px;
+                    min-width: 40px;
                   "
+                  >คณะ:</span
                 >
-                  <i
-                    data-lucide="git-branch"
-                    style="
-                      width: 14px;
-                      height: 14px;
-                      margin-right: 6px;
-                      display: inline-block;
-                      vertical-align: text-bottom;
-                    "
-                  ></i
-                  >สาขาวิชา:
-                </span>
+                <div
+                  id="filter-fac-btns"
+                  style="display: flex; gap: 10px; flex-wrap: wrap"
+                ></div>
+              </div>
+              <div
+                id="filter-br-container"
+                class="hidden"
+                style="
+                  display: flex;
+                  gap: 12px;
+                  align-items: center;
+                  flex-wrap: wrap;
+                "
+              >
+                <span
+                  style="
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: var(--text);
+                    min-width: 40px;
+                  "
+                  >สาขา:</span
+                >
                 <div
                   id="filter-br-btns"
                   style="display: flex; gap: 10px; flex-wrap: wrap"
@@ -401,12 +468,13 @@
                 class="empty-icon"
                 style="width: 72px; height: 72px"
               ></i>
-              <div>ไม่พบข้อมูลศิษย์เก่าในระบบ</div>
+              <div>ไม่พบข้อมูลนิสิตนักศึกษาในระบบ</div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
     <div
       id="modalBackdrop"
       class="modal-backdrop hidden"
@@ -457,7 +525,7 @@
             onclick="saveStudent()"
           >
             <i data-lucide="save" style="width: 18px; height: 18px"></i>
-            บันทึกข้อมูลศิษย์เก่า
+            บันทึกข้อมูลนิสิตนักศึกษา
           </button>
         </div>
       </div>
@@ -528,634 +596,6 @@
           "
         ></div>
       </div>
-      <div
-        id="modalFallbackImport"
-        class="modal-box hidden"
-        style="max-width: 500px; border-radius: 12px; padding: 0"
-        onclick="event.stopPropagation()"
-      >
-        <div class="modal-header">
-          <h3 style="font-size: 18px">
-            <i
-              data-lucide="alert-circle"
-              style="width: 24px; height: 24px; color: var(--warning)"
-            ></i>
-            ยังไม่ได้ตั้งค่า Google API Key
-          </h3>
-          <button
-            class="modal-close"
-            style="background: transparent"
-            onclick="closeAllModals()"
-          >
-            <i data-lucide="x" style="width: 24px; height: 24px"></i>
-          </button>
-        </div>
-        <div id="fallbackUploadOptions">
-          <p
-            style="
-              font-size: 14px;
-              color: var(--text-muted);
-              margin-bottom: 24px;
-            "
-          >
-            เนื่องจากระบบยังไม่ได้ระบุ <b>Client ID</b> และ
-            <b>API Key</b> ในโค้ด การเปิดหน้าต่าง Google Drive (ของแท้)
-            จึงถูกระงับไว้ชั่วคราว<br />กรุณาเลือกวิธีการนำเข้าข้อมูลด้านล่างแทน:
-          </p>
-
-          <div
-            class="fallback-card"
-            onclick="document.getElementById('excelUploadInput').click()"
-          >
-            <i
-              data-lucide="upload-cloud"
-              style="
-                width: 36px;
-                height: 36px;
-                color: #1a73e8;
-                margin-bottom: 12px;
-              "
-            ></i>
-            <div style="font-size: 16px; font-weight: 700; color: var(--text)">
-              อัปโหลดไฟล์จากคอมพิวเตอร์
-            </div>
-            <div
-              style="font-size: 13px; color: var(--text-muted); margin-top: 4px"
-            >
-              เลือกไฟล์ .csv หรือ .xlsx ที่บันทึกไว้ในเครื่อง
-            </div>
-          </div>
-
-          <div
-            class="fallback-card"
-            onclick="
-              document
-                .getElementById('fallbackDriveLink')
-                .classList.remove('hidden')
-            "
-          >
-            <i
-              data-lucide="link"
-              style="
-                width: 36px;
-                height: 36px;
-                color: #188038;
-                margin-bottom: 12px;
-              "
-            ></i>
-            <div style="font-size: 16px; font-weight: 700; color: var(--text)">
-              วางลิงก์จาก Google Sheets
-            </div>
-            <div
-              style="font-size: 13px; color: var(--text-muted); margin-top: 4px"
-            >
-              ใช้ลิงก์ที่เปิดแชร์สาธารณะแล้ว
-            </div>
-
-            <div id="fallbackDriveLink" class="hidden" style="margin-top: 16px">
-              <input
-                type="text"
-                id="driveLinkInput"
-                class="g-select"
-                placeholder="https://docs.google.com/..."
-                style="width: 100%; margin-bottom: 8px; text-align: center"
-                onclick="event.stopPropagation()"
-              />
-              <button
-                class="g-btn-blue"
-                style="margin: 0; width: 100%"
-                onclick="
-                  fetchFromDriveLink();
-                  event.stopPropagation();
-                "
-              >
-                ดึงข้อมูล
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        id="modalGooglePicker"
-        class="modal-box hidden"
-        style="max-width: 800px; border-radius: 12px; padding: 0"
-        onclick="event.stopPropagation()"
-      >
-        <div class="g-modal-header">
-          <div style="display: flex; align-items: center; gap: 12px">
-            <svg width="24" height="24" viewBox="0 0 40 40">
-              <path
-                d="M13.8 28.3L6.5 15.6l5.7-9.8L25.3 28.3h-11.5z"
-                fill="#4285F4"
-              />
-              <path
-                d="M25.3 28.3l7.3-12.7-5.8-9.8H13.8l5.7 9.8 5.8 12.7z"
-                fill="#34A853"
-              />
-              <path
-                d="M26.8 5.8H12.2l-5.7 9.8 7.3 12.7 5.7-9.8h17l-9.7-12.7z"
-                fill="#FBBC05"
-              />
-              <path
-                d="M12.2 5.8L4.9 18.5l7.3 12.7 5.7-9.8L10.6 8.7l1.6-2.9z"
-                fill="#EA4335"
-              />
-            </svg>
-            <span style="font-size: 18px; color: #202124; font-weight: 500"
-              >นำเข้าไฟล์จาก Google Drive</span
-            >
-          </div>
-          <div class="g-search-bar">
-            <i
-              data-lucide="search"
-              style="width: 18px; height: 18px; color: #5f6368"
-            ></i>
-            <input type="text" placeholder="ค้นหาในไดรฟ์หรือวาง URL" />
-            <i
-              data-lucide="sliders-horizontal"
-              style="width: 18px; height: 18px; color: #5f6368; cursor: pointer"
-            ></i>
-          </div>
-          <button
-            class="modal-close"
-            style="background: transparent"
-            onclick="closeAllModals()"
-          >
-            <i
-              data-lucide="x"
-              style="width: 24px; height: 24px; color: #5f6368"
-            ></i>
-          </button>
-        </div>
-
-        <div class="g-tabs">
-          <div class="g-tab active" id="tabDrive" onclick="switchGTab('drive')">
-            ไดรฟ์ของฉัน
-          </div>
-          <div class="g-tab" id="tabShared" onclick="switchGTab('shared')">
-            แชร์กับฉัน
-          </div>
-          <div class="g-tab" id="tabRecent" onclick="switchGTab('recent')">
-            ล่าสุด
-          </div>
-          <div class="g-tab" id="tabUpload" onclick="switchGTab('upload')">
-            อัปโหลด
-          </div>
-        </div>
-        <div
-          id="gViewDrive"
-          style="
-            background: #fff;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
-          "
-        >
-          <div class="g-section-header">
-            <span id="gViewTitle">My Drive</span>
-            <i
-              data-lucide="list"
-              style="width: 18px; height: 18px; cursor: pointer"
-            ></i>
-          </div>
-          <div class="g-file-grid" id="gFileGrid">
-            <div class="g-file-card" style="grid-column: span 2">
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  padding: 12px;
-                  gap: 12px;
-                "
-              >
-                <i
-                  data-lucide="folder"
-                  style="
-                    width: 20px;
-                    height: 20px;
-                    color: #5f6368;
-                    fill: #5f6368;
-                  "
-                ></i>
-                <span style="font-size: 13px; color: #3c4043; font-weight: 500"
-                  >AI ด้านภาคและอุตสา...</span
-                >
-              </div>
-            </div>
-            <div class="g-file-card" style="grid-column: span 2">
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  padding: 12px;
-                  gap: 12px;
-                "
-              >
-                <i
-                  data-lucide="folder"
-                  style="
-                    width: 20px;
-                    height: 20px;
-                    color: #5f6368;
-                    fill: #5f6368;
-                  "
-                ></i>
-                <span style="font-size: 13px; color: #3c4043; font-weight: 500"
-                  >ต้นเดือนนี้</span
-                >
-              </div>
-            </div>
-            <div
-              class="g-file-card"
-              onclick="simulateDriveFileSelect('student_data.csv')"
-            >
-              <div class="g-file-preview">
-                <svg width="40" height="40" viewBox="0 0 40 40">
-                  <path
-                    d="M24 2H8C5.8 2 4 3.8 4 6v28c0 2.2 1.8 4 4 4h24c2.2 0 4-1.8 4-4V14L24 2z"
-                    fill="#188038"
-                  />
-                  <path d="M24 2v12h12L24 2z" fill="#A5D6A7" />
-                  <path
-                    d="M12 20h16v2H12v-2zm0 6h16v2H12v-2zm0 6h12v2H12v-2z"
-                    fill="#fff"
-                  />
-                </svg>
-              </div>
-              <div class="g-file-name">
-                <svg width="14" height="14" viewBox="0 0 24 24">
-                  <path
-                    d="M14 2H6C4.9 2 4 2.9 4 4v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"
-                    fill="#188038"
-                  />
-                  <path d="M14 2v6h6L14 2z" fill="#A5D6A7" />
-                </svg>
-                <span>student_data.csv</span>
-              </div>
-            </div>
-
-            <div
-              class="g-file-card"
-              onclick="simulateDriveFileSelect('student_data (1).csv')"
-            >
-              <div class="g-file-preview">
-                <svg width="40" height="40" viewBox="0 0 40 40">
-                  <path
-                    d="M24 2H8C5.8 2 4 3.8 4 6v28c0 2.2 1.8 4 4 4h24c2.2 0 4-1.8 4-4V14L24 2z"
-                    fill="#1a73e8"
-                  />
-                  <path d="M24 2v12h12L24 2z" fill="#8ab4f8" />
-                  <path
-                    d="M12 20h16v2H12v-2zm0 6h16v2H12v-2zm0 6h12v2H12v-2z"
-                    fill="#fff"
-                  />
-                </svg>
-              </div>
-              <div class="g-file-name">
-                <svg width="14" height="14" viewBox="0 0 24 24">
-                  <path
-                    d="M14 2H6C4.9 2 4 2.9 4 4v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"
-                    fill="#1a73e8"
-                  />
-                  <path d="M14 2v6h6L14 2z" fill="#8ab4f8" />
-                </svg>
-                <span>student_data (1).csv</span>
-              </div>
-            </div>
-
-            <div class="g-file-card">
-              <div class="g-file-preview">
-                <svg width="40" height="40" viewBox="0 0 40 40">
-                  <path
-                    d="M24 2H8C5.8 2 4 3.8 4 6v28c0 2.2 1.8 4 4 4h24c2.2 0 4-1.8 4-4V14L24 2z"
-                    fill="#1a73e8"
-                  />
-                  <path d="M24 2v12h12L24 2z" fill="#8ab4f8" />
-                  <path
-                    d="M12 20h16v2H12v-2zm0 6h16v2H12v-2zm0 6h12v2H12v-2z"
-                    fill="#fff"
-                  />
-                </svg>
-              </div>
-              <div class="g-file-name">
-                <svg width="14" height="14" viewBox="0 0 24 24">
-                  <path
-                    d="M14 2H6C4.9 2 4 2.9 4 4v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"
-                    fill="#1a73e8"
-                  />
-                  <path d="M14 2v6h6L14 2z" fill="#8ab4f8" />
-                </svg>
-                <span>660730-เกีย...</span>
-              </div>
-            </div>
-
-            <div class="g-file-card">
-              <div class="g-file-preview">
-                <svg width="40" height="40" viewBox="0 0 40 40">
-                  <path
-                    d="M24 2H8C5.8 2 4 3.8 4 6v28c0 2.2 1.8 4 4 4h24c2.2 0 4-1.8 4-4V14L24 2z"
-                    fill="#1a73e8"
-                  />
-                  <path d="M24 2v12h12L24 2z" fill="#8ab4f8" />
-                  <path
-                    d="M12 20h16v2H12v-2zm0 6h16v2H12v-2zm0 6h12v2H12v-2z"
-                    fill="#fff"
-                  />
-                </svg>
-              </div>
-              <div class="g-file-name">
-                <svg width="14" height="14" viewBox="0 0 24 24">
-                  <path
-                    d="M14 2H6C4.9 2 4 2.9 4 4v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"
-                    fill="#1a73e8"
-                  />
-                  <path d="M14 2v6h6L14 2z" fill="#8ab4f8" />
-                </svg>
-                <span>Certificate (...</span>
-              </div>
-            </div>
-          </div>
-          <div
-            style="
-              padding: 24px;
-              text-align: center;
-              border-top: 1px solid var(--border);
-            "
-          >
-            <div
-              style="
-                font-size: 14px;
-                font-weight: 600;
-                margin-bottom: 8px;
-                color: #202124;
-              "
-            >
-              ต้องการดึงข้อมูลด้วยลิงก์โดยตรง?
-            </div>
-            <div style="font-size: 12px; color: #5f6368; margin-bottom: 16px">
-              (โปรดตั้งค่าการแชร์ไฟล์บนไดรฟ์ให้เป็น
-              "ทุกคนที่มีลิงก์สามารถดูได้")
-            </div>
-            <input
-              type="text"
-              id="driveLinkInput"
-              class="g-select"
-              placeholder="วางลิงก์ https://docs.google.com/spreadsheets/d/... ที่นี่"
-              style="max-width: 400px; margin-bottom: 16px; text-align: center"
-            />
-            <div>
-              <button
-                class="g-btn-blue"
-                style="margin-top: 0"
-                onclick="fetchFromDriveLink()"
-              >
-                ดึงข้อมูลจากลิงก์
-              </button>
-            </div>
-          </div>
-        </div>
-        <div
-          id="gViewShared"
-          class="hidden"
-          style="
-            background: #fff;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
-          "
-        >
-          <div class="g-section-header">
-            <span id="gViewTitleShared">Shared with me</span>
-            <i
-              data-lucide="list"
-              style="width: 18px; height: 18px; cursor: pointer"
-            ></i>
-          </div>
-          <div style="padding: 24px; text-align: center; color: #5f6368">
-            <i
-              data-lucide="folder-open"
-              style="
-                width: 64px;
-                height: 64px;
-                opacity: 0.3;
-                margin-bottom: 16px;
-                display: block;
-              "
-            ></i>
-            <div>ไม่มีไฟล์ที่แชร์มากับคุณ</div>
-          </div>
-        </div>
-        <div
-          id="gViewRecent"
-          class="hidden"
-          style="
-            background: #fff;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
-          "
-        >
-          <div class="g-section-header">
-            <span id="gViewTitleRecent">Recent</span>
-            <i
-              data-lucide="list"
-              style="width: 18px; height: 18px; cursor: pointer"
-            ></i>
-          </div>
-          <div style="padding: 24px; text-align: center; color: #5f6368">
-            <i
-              data-lucide="clock"
-              style="
-                width: 64px;
-                height: 64px;
-                opacity: 0.3;
-                margin-bottom: 16px;
-                display: block;
-              "
-            ></i>
-            <div>ไม่มีไฟล์ที่เปิดใช้งานล่าสุด</div>
-          </div>
-        </div>
-        <div id="gViewUpload" class="g-upload-area hidden">
-          <svg
-            width="180"
-            height="120"
-            viewBox="0 0 200 120"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M140 100H50C22.4 100 0 77.6 0 50C0 24.3 19.3 3.1 44.5 0.5C53.3 -9.1 76.8 -5.5 88.5 12.5C94.8 5.7 106.1 2 118 2C143.7 2 165.6 21.5 168.9 46.5C186.8 48.7 200 64.2 200 82.5C200 102.1 184.1 118 164.5 118H140V100Z"
-              fill="#E8EAED"
-            />
-            <path
-              d="M140 118V100C140 100 161.4 100 164.5 100C174.4 100 182.5 92 182.5 82.5C182.5 73 174.4 65 164.5 65H150V56.5C150 37.5 134.5 22 115.5 22C101.9 22 89.9 29.8 84.2 41.5L81.4 47.4L74.8 46.8C72.8 46.6 70.8 46.5 68.8 46.5C48.6 46.5 32.2 62.9 32.2 83.1C32.2 92.4 35.7 101.2 42.1 108.1L55.5 118H140Z"
-              fill="#F1F3F4"
-            />
-          </svg>
-          <button
-            class="g-btn-blue"
-            onclick="document.getElementById('excelUploadInput').click()"
-          >
-            เรียกดู
-          </button>
-          <div style="font-size: 16px; color: #3c4043">
-            หรือลากไฟล์เพื่ออัปโหลดไปยัง<b>ไดรฟ์ของฉัน</b> แล้วเลือก
-          </div>
-        </div>
-      </div>
-      <div
-        id="modalImportSettings"
-        class="modal-box hidden"
-        style="max-width: 480px; border-radius: 8px; padding: 0"
-        onclick="event.stopPropagation()"
-      >
-        <div style="padding: 24px; border-bottom: 1px solid transparent">
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 24px;
-            "
-          >
-            <h3
-              style="
-                font-size: 22px;
-                font-weight: 400;
-                color: #202124;
-                margin: 0;
-              "
-            >
-              นำเข้าไฟล์
-            </h3>
-            <button
-              class="modal-close"
-              style="background: transparent; margin: -12px -12px 0 0"
-              onclick="closeAllModals()"
-            >
-              <i
-                data-lucide="x"
-                style="width: 24px; height: 24px; color: #5f6368"
-              ></i>
-            </button>
-          </div>
-
-          <div style="margin-bottom: 24px">
-            <div style="font-size: 12px; color: #5f6368; margin-bottom: 8px">
-              ไฟล์
-            </div>
-            <div
-              id="selectedFileName"
-              style="
-                font-weight: 700;
-                font-size: 14px;
-                color: #202124;
-                word-break: break-all;
-              "
-            >
-              student_data.csv
-            </div>
-          </div>
-
-          <div
-            style="
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 16px;
-              margin-bottom: 24px;
-            "
-          >
-            <div>
-              <label
-                style="
-                  display: block;
-                  font-weight: normal;
-                  color: #5f6368;
-                  font-size: 12px;
-                  margin-bottom: 8px;
-                "
-                >ตำแหน่งนำเข้า</label
-              >
-              <select id="importLocation" class="g-select">
-                <option value="new">สร้างสเปรดชีตใหม่</option>
-                <option value="insert_sheet">แทรกชีตใหม่</option>
-                <option value="replace_spreadsheet">แทนที่สเปรดชีต</option>
-                <option value="replace">แทนที่ชีตปัจจุบัน</option>
-                <option value="append" selected>เพิ่มต่อท้ายชีตปัจจุบัน</option>
-                <option value="replace_cells">
-                  แทนที่ข้อมูลในเซลล์ที่เลือก
-                </option>
-              </select>
-            </div>
-            <div>
-              <label
-                style="
-                  display: block;
-                  font-weight: normal;
-                  color: #5f6368;
-                  font-size: 12px;
-                  margin-bottom: 8px;
-                "
-                >ประเภทตัวคั่น</label
-              >
-              <select id="importSeparator" class="g-select">
-                <option value="auto">ตรวจหาโดยอัตโนมัติ</option>
-                <option value="tab">แท็บ</option>
-                <option value="comma">คอมมา</option>
-                <option value="custom">กำหนดเอง</option>
-              </select>
-            </div>
-          </div>
-
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              margin-bottom: 24px;
-            "
-          >
-            <input
-              type="checkbox"
-              id="importConvert"
-              checked
-              style="
-                width: 18px;
-                height: 18px;
-                accent-color: #188038;
-                cursor: pointer;
-              "
-            />
-            <label
-              for="importConvert"
-              style="
-                font-size: 14px;
-                color: #202124;
-                cursor: pointer;
-                margin: 0;
-              "
-              >แปลงข้อความเป็นตัวเลข วันที่ และสูตร</label
-            >
-          </div>
-        </div>
-
-        <div
-          style="
-            padding: 16px 24px;
-            border-top: 1px solid #e0e0e0;
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-          "
-        >
-          <button
-            id="btnConfirmImport"
-            class="g-btn-green"
-            onclick="confirmImport()"
-          >
-            นำเข้าข้อมูล
-          </button>
-          <button class="g-btn-white" onclick="closeAllModals()">ยกเลิก</button>
-        </div>
-      </div>
 
       <div
         id="modalGenericList"
@@ -1163,33 +603,39 @@
         onclick="event.stopPropagation()"
       >
         <div class="modal-header-fancy">
-          <div>
-            <h2
-              id="listModalTitleText"
-              style="
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                font-size: 24px;
-                font-weight: 800;
-                margin-bottom: 6px;
-              "
-            >
-              <i
-                id="listModalIcon"
-                data-lucide="users"
-                style="width: 28px; height: 28px"
-              ></i>
-              รายชื่อ
-            </h2>
-            <div
-              id="listModalSub"
-              style="font-size: 15px; opacity: 0.9; font-weight: 500"
-            ></div>
+          <div style="width: 100%;">
+            <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 16px;">
+              <div>
+                <h2
+                  id="listModalTitleText"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    font-size: 24px;
+                    font-weight: 800;
+                    margin-bottom: 6px;
+                  "
+                >
+                  <i
+                    id="listModalIcon"
+                    data-lucide="users"
+                    style="width: 28px; height: 28px"
+                  ></i>
+                  รายชื่อ
+                </h2>
+                <div
+                  id="listModalSub"
+                  style="font-size: 15px; opacity: 0.9; font-weight: 500"
+                ></div>
+              </div>
+              <button class="modal-close-fancy" onclick="closeAllModals()">
+                <i data-lucide="x" style="width: 20px; height: 20px"></i>
+              </button>
+            </div>
+            <!-- ช่องค้นหา -->
+            <input type="text" id="modalSearchInput" placeholder="ค้นหา ชื่อ, นามสกุล, สาขา, ปี..." oninput="filterModalList()" style="width: 100%; padding: 10px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff; font-size: 14px;">
           </div>
-          <button class="modal-close-fancy" onclick="closeAllModals()">
-            <i data-lucide="x" style="width: 20px; height: 20px"></i>
-          </button>
         </div>
         <div
           class="modal-body"
@@ -1202,24 +648,44 @@
           "
         ></div>
       </div>
+
+      <!-- 🟢 Modal: ลากวางไฟล์อัปโหลด Excel/CSV -->
+      <div id="modalLocalUpload" class="modal-box modal-md hidden" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <h3 style="font-size: 18px; color: var(--text);">
+            <i data-lucide="upload-cloud" style="width:24px; height:24px; color: var(--accent); display:inline-block; vertical-align: middle; margin-right: 8px;"></i>
+            นำเข้าข้อมูลจาก Excel / CSV
+          </h3>
+          <button class="modal-close" onclick="closeAllModals()">
+            <i data-lucide="x" style="width: 20px; height: 20px"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- พื้นที่ลากวางไฟล์ -->
+          <div id="dropZone"
+               style="border: 2px dashed #93c5fd; border-radius: 16px; padding: 40px 20px; text-align: center; cursor: pointer; background: var(--accent-soft); transition: all 0.2s;"
+               onclick="document.getElementById('excelUploadInput').click()"
+               ondragover="event.preventDefault(); this.style.background='#cffafe'; this.style.borderColor='var(--accent)';"
+               ondragleave="event.preventDefault(); this.style.background='var(--accent-soft)'; this.style.borderColor='#93c5fd';"
+               ondrop="handleDrop(event)">
+
+            <i data-lucide="file-spreadsheet" style="width: 48px; height: 48px; color: var(--accent); margin-bottom: 16px; display: block;"></i>
+            <div style="font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px;">ลากไฟล์ Excel มาวางที่นี่</div>
+            <div style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">รองรับไฟล์นามสกุล .xlsx, .xls และ .csv (ขนาดไม่เกิน 5MB)</div>
+
+            <button class="btn btn-primary" style="pointer-events: none;">
+              <i data-lucide="search" style="width: 16px; height: 16px;"></i> คลิกเพื่อค้นหาไฟล์
+            </button>
+          </div>
+
+          <!-- Input ไฟล์ที่ซ่อนไว้ -->
+          <input type="file" id="excelUploadInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleFileSelect(event)" />
+        </div>
+      </div>
     </div>
 
     <div id="toast"></div>
-    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/chart.umd.js"></script>
-    <script src="alumni.js"></script>
-    <script
-      async
-      defer
-      src="https://apis.google.com/js/api.js"
-      onload="gapiLoaded()"
-    ></script>
-    <script
-      async
-      defer
-      src="https://accounts.google.com/gsi/client"
-      onload="gisLoaded()"
-    ></script>
+
+    <script src="./alumni.js" defer></script>
   </body>
 </html>
