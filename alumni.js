@@ -416,7 +416,7 @@ function closeAllPanels(e) {
     const n = document.getElementById(t);
     n &&
       (n.querySelector(".panel").classList.remove("open"),
-      n.querySelector("button").classList.remove("active"));
+        n.querySelector("button").classList.remove("active"));
   });
 }
 
@@ -508,10 +508,10 @@ async function callAPI(e = null) {
   try {
     let t = e
       ? {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(e),
-        }
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(e),
+      }
       : { method: "GET" };
     const n = await fetch(API_URL, t);
     return await n.json();
@@ -619,10 +619,10 @@ async function fetchData(e = !1) {
         gradYear: (() => {
           let t = String(
             e["รุ่นปี (ปีที่จบ)"] ||
-              e["รุ่น"] ||
-              (e["วันจบการศึกษา"]
-                ? String(e["วันจบการศึกษา"]).substring(0, 4)
-                : ""),
+            e["รุ่น"] ||
+            (e["วันจบการศึกษา"]
+              ? String(e["วันจบการศึกษา"]).substring(0, 4)
+              : ""),
           ).trim();
           return (
             (t = t.replace(/\D/g, "")),
@@ -659,7 +659,7 @@ function updateDashboardAndTable() {
   const t = document.getElementById("yearFilter");
   t &&
     (t.innerHTML =
-      '<option value="">ทุกรุ่นที่จบ (พ.ศ.)</option>' +
+      '<option value="">ทุกปีที่จบ (พ.ศ.)</option>' +
       e.map((e) => `<option>${e}</option>`).join(""));
   "dash" === currentPage && renderDash();
   "students" === currentPage && renderTable();
@@ -752,7 +752,7 @@ function setFilterStatus(e, t) {
   const n = document.getElementById("filter-status-group");
   n &&
     (n.querySelectorAll("button").forEach((e) => e.classList.remove("active")),
-    t && t.classList.add("active"));
+      t && t.classList.add("active"));
   renderTable();
 }
 
@@ -793,15 +793,15 @@ function loadChartLibrary() {
   return window.Chart
     ? Promise.resolve()
     : chartLibraryLoading ||
-        ((chartLibraryLoading = new Promise((e) => {
-          const t = document.createElement("script");
-          t.src =
-            "https://cdn.jsdelivr.net/npm/chart.js@latest/dist/chart.umd.js";
-          t.async = !0;
-          t.onload = () => e();
-          document.body.appendChild(t);
-        })),
-        chartLibraryLoading);
+    ((chartLibraryLoading = new Promise((e) => {
+      const t = document.createElement("script");
+      t.src =
+        "https://cdn.jsdelivr.net/npm/chart.js@latest/dist/chart.umd.js";
+      t.async = !0;
+      t.onload = () => e();
+      document.body.appendChild(t);
+    })),
+      chartLibraryLoading);
 }
 
 function renderDash() {
@@ -833,25 +833,34 @@ function renderDash() {
   const p = a.length ? Math.round((i.length / a.length) * 100) : 0;
   const s_percent = a.length ? Math.round((s / a.length) * 100) : 0;
   const l_percent = a.length ? Math.round((l.length / a.length) * 100) : 0;
-  let u = 0,
-    m = 0;
-  i.forEach((e) => {
-    if (
-      e.gradDate &&
-      e.jobStartDate &&
-      "-" !== e.gradDate &&
-      "-" !== e.jobStartDate
-    ) {
-      const t = new Date(e.gradDate),
-        n = new Date(e.jobStartDate);
+  let u = 0, m = 0;
+  i.forEach(e => {
+    if (e.gradDate && e.jobStartDate && "-" !== e.gradDate && "-" !== e.jobStartDate) {
+      const t = new Date(e.gradDate), n = new Date(e.jobStartDate);
       if (!isNaN(t) && !isNaN(n) && n >= t) {
         const e = Math.abs(n - t);
-        u += e / 2630016e3;
+        u += e; // เก็บค่าผลรวมเวลาทั้งหมดเป็น Milliseconds
         m++;
       }
     }
   });
-  const g = m > 0 ? (u / m).toFixed(1) : 0;
+
+  // แปลงค่าเฉลี่ยให้ออกมาเป็น ปี เดือน วัน
+  let g = "0 วัน";
+  if (m > 0) {
+    const avgDays = Math.floor((u / m) / (1000 * 60 * 60 * 24)); // แปลงเฉลี่ยเป็นจำนวนวัน
+    const years = Math.floor(avgDays / 365);
+    const months = Math.floor((avgDays % 365) / 30);
+    const days = Math.floor((avgDays % 365) % 30);
+
+    let timeArr = [];
+    if (years > 0) timeArr.push(`${years} ปี`);
+    if (months > 0) timeArr.push(`${months} เดือน`);
+    if (days > 0) timeArr.push(`${days} วัน`);
+
+    g = timeArr.length > 0 ? timeArr.join(" ") : "0 วัน";
+  }
+
   const h = [...new Set(a.map((e) => e.gradYear))]
     .filter(Boolean)
     .sort()
@@ -946,6 +955,8 @@ function renderDash() {
     "#f0f9ff|#0369a1",
   ];
   e.innerHTML = `
+  <div id="dashboardSearchResults" style="display:none; margin-bottom:24px;"></div>
+
   <div class="exec-summary fade-in">
     <div class="exec-summary-icon"><i data-lucide="bar-chart-4" style="width:36px;height:36px;"></i></div>
     <div class="exec-summary-text">
@@ -956,19 +967,18 @@ function renderDash() {
         <span style="color:#facc15;">● ว่างงาน <strong>${l_percent}%</strong></span> <span style="opacity:0.5; margin:0 8px;">|</span> 
         <span style="color:#60a5fa;">● ศึกษาต่อ <strong>${s_percent}%</strong></span>
       </span>
-      <br><span style="font-size:13px; opacity:0.8; margin-top:8px; display:inline-block;">(ผู้ที่ได้งานทำ ใช้เวลาเฉลี่ยในการหางานหลังจบการศึกษา <strong>${g} เดือน</strong>)</span></p>
+      <br><span style="font-size:13px; opacity:0.8; margin-top:8px; display:inline-block;">(ผู้ที่ได้งานทำ ใช้เวลาเฉลี่ยในการหางานหลังจบการศึกษา <strong>${g} </strong>)</span></p>
     </div>
   </div>
 
   <div class="stats-grid fade-in">
     ${[
-      [
-        "check-circle-2",
+      ["check-circle-2",
         "อัตราการรับเข้าทำงาน",
         p + "%",
-        `ทำงาน ${i.length} จาก ${a.length} คน`,
+        `ทำงาน ${i.length} คน | ไม่ได้ทำ ${a.length - i.length} คน (จาก ${a.length} คน)`,
         "var(--success)",
-        "var(--success-soft)",
+        "var(--success-soft)"
       ],
       [
         "clock",
@@ -994,14 +1004,7 @@ function renderDash() {
         "var(--accent)",
         "var(--accent-soft)",
       ],
-      [
-        "trending-up",
-        "อัตราเงินเดือนเฉลี่ย",
-        fmtMoney(c),
-        "บาท/เดือน",
-        "#3b82f6",
-        "#eff6ff",
-      ],
+
       [
         "users",
         "จำนวนศิษย์เก่าทั้งหมด",
@@ -1027,31 +1030,31 @@ function renderDash() {
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px" class="fade-in">
     <div class="card">
-      <div class="card-header">สัดส่วนสถานะการทำงาน <span style="font-size:13px;font-weight:600;color:var(--text-muted);">คลิกดูรายชื่อได้</span></div>
+      <div class="card-header">สัดส่วนสถานะการทำงาน</div>
       <div class="card-body" style="display:flex; flex-direction:column; gap:24px;">
         ${[
-          {
-            l: "ทำงานแล้ว",
-            n: i.length,
-            c: "var(--success)",
-            fn: "viewStatus('ทำงาน')",
-          },
-          {
-            l: "ศึกษาต่อ (รวมต่างประเทศ)",
-            n: s,
-            c: "var(--accent)",
-            fn: "viewStatus('ศึกษาต่อ')",
-          },
-          {
-            l: "อยู่ระหว่างหางาน",
-            n: l.length,
-            c: "var(--warning)",
-            fn: "viewStatus('ว่างงาน')",
-          },
-        ]
-          .map((e) => {
-            const d = a.length ? Math.round((e.n / a.length) * 100) : 0;
-            return `
+      {
+        l: "ทำงานแล้ว",
+        n: i.length,
+        c: "var(--success)",
+        fn: "viewStatus('ทำงาน')",
+      },
+      {
+        l: "ศึกษาต่อ (รวมต่างประเทศ)",
+        n: s,
+        c: "var(--accent)",
+        fn: "viewStatus('ศึกษาต่อ')",
+      },
+      {
+        l: "อยู่ระหว่างหางาน",
+        n: l.length,
+        c: "var(--warning)",
+        fn: "viewStatus('ว่างงาน')",
+      },
+    ]
+      .map((e) => {
+        const d = a.length ? Math.round((e.n / a.length) * 100) : 0;
+        return `
         <div class="clickable-item branch-stat-item" onclick="${e.fn}" style="position:relative;">
           <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700; margin-bottom:12px; color:var(--text); align-items:baseline; flex-wrap:wrap;">
             <span style="flex:1; word-break:break-word; min-width:150px;">${e.l}</span>
@@ -1071,8 +1074,8 @@ function renderDash() {
             <div style="width:${d}%; height:100%; background:${e.c}; border-radius:99px; transition:width 0.3s cubic-bezier(0.16, 1, 0.3, 1);"></div>
           </div>
         </div>`;
-          })
-          .join("")}
+      })
+      .join("")}
       </div>
     </div>
     
@@ -1086,13 +1089,12 @@ function renderDash() {
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px" class="fade-in">
     <div class="card">
-      <div class="card-header">ท็อปบริษัทที่รับเข้าทำงาน <span style="font-size:13px;color:var(--accent);font-weight:600;padding:6px 12px;background:var(--accent-soft);border-radius:12px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;"><i data-lucide="mouse-pointer-click" style="width:14px;height:14px;"></i> ดูรายชื่อบริษัทที่รับเข้าทำงาน</span></div>
+      <div class="card-header">บริษัทที่รับเข้าทำงาน</div>
       <div class="card-body" style="height:320px;overflow:auto;padding-top:16px;">
-        ${
-          C.length
-            ? C.map(([e, t], n) => {
-                const [a, i] = _[n % 7].split("|");
-                return `
+        ${C.length
+      ? C.map(([e, t], n) => {
+        const [a, i] = _[n % 7].split("|");
+        return `
         <div class="person-item" onclick="openCompany('${esc(e)}')">
           <div class="flex flex-center gap-12">
             <div class="co-rank" style="background:${a};color:${i}; width:36px; height:36px; border-radius:10px; font-size:14px; display:flex; align-items:center; justify-content:center;">${n + 1}</div>
@@ -1103,9 +1105,9 @@ function renderDash() {
             <span style="color:var(--text-muted);"><i data-lucide="chevron-right" style="width:18px;height:18px;"></i></span>
           </div>
         </div>`;
-              }).join("")
-            : '<div style="text-align:center;padding:40px;color:#94a3b8;">ไม่มีข้อมูล</div>'
-        }
+      }).join("")
+      : '<div style="text-align:center;padding:40px;color:#94a3b8;">ไม่มีข้อมูล</div>'
+    }
       </div>
     </div>
 
@@ -1230,7 +1232,7 @@ function openGroupModal(e, t, n, a = null) {
       '<div class="empty-state" style="padding:40px;"><i data-lucide="folder-search" style="width:64px;height:64px;color:#cbd5e1;margin-bottom:16px;"></i><div style="font-size:16px;">ไม่พบข้อมูลศิษย์เก่าในหมวดหมู่นี้</div></div>';
   } else {
     r.forEach((e) => {
-      o += `<div class="list-group-header"><i data-lucide="calendar" style="width:20px;margin-right:8px;"></i> รุ่นปี พ.ศ. ${esc(e)} <span style="font-size:14px; opacity:0.8; font-weight:normal; margin-left:12px;">(รวม ${i[e].length} คน)</span></div>`;
+      o += `<div class="list-group-header"><i data-lucide="calendar" style="width:20px;margin-right:8px;"></i> ปีที่จบ พ.ศ. ${esc(e)} <span style="font-size:14px; opacity:0.8; font-weight:normal; margin-left:12px;">(รวม ${i[e].length} คน)</span></div>`;
       const t = {};
       i[e].forEach((e) => {
         const n =
@@ -1259,14 +1261,14 @@ function openGroupModal(e, t, n, a = null) {
               </div>
               <div style="text-align:right">
                 ${e.jobSalary > 0
-                  ? `<div style="font-size:15px;font-weight:800;color:var(--success)">${fmtMoney(e.jobSalary)}</div>`
-                  : "ศึกษาต่อต่างประเทศ" === e.jobStatus
-                    ? '<span class="study-tag tag-abroad" style="font-size:12.5px;padding:4px 12px;"><i data-lucide="globe" style="width:13px;height:13px;"></i> 🌍 ต่างประเทศ</span>'
-                    : ("ศึกษาต่อ" === e.jobStatus || "ศึกษาต่อในประเทศ" === e.jobStatus)
-                      ? '<span class="study-tag tag-local" style="font-size:12.5px;padding:4px 12px;"><i data-lucide="book-open" style="width:13px;height:13px;"></i> 🇹🇭 ในประเทศ</span>'
-                      : ("ว่างงาน" === e.jobStatus || "กำลังหางาน" === e.jobStatus)
-                        ? '<span style="display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;color:var(--warning);background:var(--warning-soft);border:1px solid rgba(245,158,11,0.2);padding:4px 12px;border-radius:20px;"><i data-lucide="search" style="width:13px;height:13px;"></i> ⏳ ว่างงาน</span>'
-                        : `<div style="font-size:13px;color:var(--text-muted);font-weight:700; background:var(--bg); padding:4px 10px; border-radius:12px;">${esc(e.jobStatus)}</div>`}
+                ? `<div style="font-size:15px;font-weight:800;color:var(--success)">${fmtMoney(e.jobSalary)}</div>`
+                : "ศึกษาต่อต่างประเทศ" === e.jobStatus
+                  ? '<span class="study-tag tag-abroad" style="font-size:12.5px;padding:4px 12px;"><i data-lucide="globe" style="width:13px;height:13px;"></i> 🌍 ต่างประเทศ</span>'
+                  : ("ศึกษาต่อ" === e.jobStatus || "ศึกษาต่อในประเทศ" === e.jobStatus)
+                    ? '<span class="study-tag tag-local" style="font-size:12.5px;padding:4px 12px;"><i data-lucide="book-open" style="width:13px;height:13px;"></i> 🇹🇭 ในประเทศ</span>'
+                    : ("ว่างงาน" === e.jobStatus || "กำลังหางาน" === e.jobStatus)
+                      ? '<span style="display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;color:var(--warning);background:var(--warning-soft);border:1px solid rgba(245,158,11,0.2);padding:4px 12px;border-radius:20px;"><i data-lucide="search" style="width:13px;height:13px;"></i> ⏳ ว่างงาน</span>'
+                      : `<div style="font-size:13px;color:var(--text-muted);font-weight:700; background:var(--bg); padding:4px 10px; border-radius:12px;">${esc(e.jobStatus)}</div>`}
               </div>
             </div>`;
           });
@@ -1359,12 +1361,12 @@ function renderTable() {
       const studyLabel =
         "ศึกษาต่อต่างประเทศ" === e.jobStatus
           ? '<div style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;"><span class="badge ' +
-            jcBadge(e.jobStatus) +
-            '"><i data-lucide="globe" style="width:14px;height:14px;"></i> ศึกษาต่อ</span><span style="font-size:11px;font-weight:700;color:#7c3aed;background:#f3e8ff;padding:2px 8px;border-radius:10px;display:inline-flex;align-items:center;gap:4px;">🌍 ต่างประเทศ</span></div>'
+          jcBadge(e.jobStatus) +
+          '"><i data-lucide="globe" style="width:14px;height:14px;"></i> ศึกษาต่อ</span><span style="font-size:11px;font-weight:700;color:#7c3aed;background:#f3e8ff;padding:2px 8px;border-radius:10px;display:inline-flex;align-items:center;gap:4px;">🌍 ต่างประเทศ</span></div>'
           : "ศึกษาต่อ" === e.jobStatus || "ศึกษาต่อในประเทศ" === e.jobStatus
             ? '<div style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;"><span class="badge ' +
-              jcBadge(e.jobStatus) +
-              '"><i data-lucide="book-open" style="width:14px;height:14px;"></i> ศึกษาต่อ</span><span style="font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:10px;display:inline-flex;align-items:center;gap:4px;">🇹🇭 ในประเทศ</span></div>'
+            jcBadge(e.jobStatus) +
+            '"><i data-lucide="book-open" style="width:14px;height:14px;"></i> ศึกษาต่อ</span><span style="font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:10px;display:inline-flex;align-items:center;gap:4px;">🇹🇭 ในประเทศ</span></div>'
             : null;
       return `
     <tr class="fade-in">
@@ -1382,7 +1384,7 @@ function renderTable() {
         </div>
       </td>
       <td>
-        <div style="font-size:14.5px;font-weight:800;color:var(--accent);">พ.ศ. ${esc(e.gradYear)}</div>
+        <div style="font-size:14.5px;font-weight:800;color:var(--accent);"> ${esc(e.gradYear)}</div>
         <div style="font-size:13px;color:${"ชาย" === e.gender ? "#0284c7" : "#db2777"};font-weight:700; margin-top:2px;">${esc(e.gender)}</div>
       </td>
       <td style="color:var(--text-muted);font-size:14px;">
@@ -1398,13 +1400,9 @@ function renderTable() {
       <td>${n}</td>
       <td>
         <div class="td-actions">
-          <button class="btn btn-outline btn-sm" onclick="openDetail('${esc(e.idCard)}')"><i data-lucide="eye" style="width:16px;height:16px;"></i> ข้อมูล</button>
-          ${
-            l
-              ? `<button class="btn btn-success btn-sm" onclick="openEdit('${esc(e.idCard)}')"><i data-lucide="edit-2" style="width:16px;height:16px;"></i> แก้ไข</button>
-          <button class="btn btn-danger btn-sm" onclick="openConfirmDel('${esc(e.idCard)}')"><i data-lucide="trash-2" style="width:16px;height:16px;"></i> ลบ</button>`
-              : ""
-          }
+  <button class="btn btn-outline btn-sm" onclick="openDetail('${esc(e.idCard)}')"><i data-lucide="eye" style="width:16px;height:16px;"></i> ข้อมูล</button> 
+  ${l ? `<button class="btn btn-success btn-sm" onclick="openEdit('${esc(e.idCard)}')"><i data-lucide="edit-2" style="width:16px;height:16px;"></i> แก้ไข</button>` : ""} 
+</div>
         </div>
       </td>
     </tr>`;
@@ -1427,6 +1425,35 @@ function closeAllModals() {
   document.body.classList.remove("modal-open");
 }
 
+// ฟังก์ชันค้นหาในรายชื่อ Modal
+function filterModalList() {
+  const searchTerm = document.getElementById("modalSearchInput").value.toLowerCase();
+  const items = document.querySelectorAll("#listModalBody .person-item");
+
+  items.forEach(item => {
+    const text = item.innerText.toLowerCase();
+    item.style.display = text.includes(searchTerm) ? "flex" : "none";
+  });
+}
+
+// ฟังก์ชันจัดการเมื่อมีการ "ลากไฟล์มาปล่อย (Drop)"
+function handleDrop(e) {
+  e.preventDefault(); // ป้องกันเบราว์เซอร์เปิดไฟล์ทับหน้าเว็บ
+
+  const dropZone = document.getElementById('dropZone');
+  if (dropZone) {
+    dropZone.style.background = 'var(--accent-soft)';
+    dropZone.style.borderColor = '#93c5fd';
+  }
+
+  // ตรวจสอบว่ามีการแนบไฟล์มาด้วยหรือไม่
+  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    const file = e.dataTransfer.files[0];
+    // โยนไฟล์เข้าฟังก์ชันประมวลผล Local File
+    processLocalFile(file);
+  }
+}
+
 function openDetail(e) {
   const t = STUDENTS.find((t) => String(t.idCard) === String(e));
   if (!t) return;
@@ -1442,7 +1469,7 @@ function openDetail(e) {
   document.getElementById("detailHeader").innerHTML = `
     <div>
       <h2>${esc(t.prefix + t.nameTH + " " + t.surnameTH)}</h2>
-      <div class="sub">${esc(t.nameEN + " " + t.surnameEN)} · ศิษย์เก่ารุ่นปี พ.ศ. ${t.gradYear}</div>
+      <div class="sub">${esc(t.nameEN + " " + t.surnameEN)} · ศิษย์เก่าปีที่จบ พ.ศ. ${t.gradYear}</div>
     </div>
     <div class="flex flex-center gap-10">
       <span class="badge" style="background:${n.bg};color:${n.tx};font-size:14.5px;padding:8px 18px;border-radius:12px;">${esc(t.jobStatus)}</span>
@@ -1455,9 +1482,11 @@ function openDetail(e) {
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <div class="detail-section-title" style="margin-bottom:0;"><i data-lucide="${n}" style="width:18px;height:18px;"></i> ${e}</div>
         ${a ? `<button class="btn btn-outline btn-sm" style="padding:6px 12px; font-size:12.5px; border-radius:8px;" onclick="closeAllModals(); openEdit('${t.idCard}', '${i}')"><i data-lucide="edit" style="width:14px;height:14px;"></i> แก้ไขส่วนนี้</button>` : ""}
-      </div>
+        </div>
       <div class="detail-grid">${r}</div>
     </div>`;
+    document.getElementById("detailFooter").innerHTML = '';
+      document.getElementById("detailFooter").style.display = 'none'; 
   const l = t.durationToGetJob || "-";
   document.getElementById("detailBody").innerHTML = `
     ${r("ข้อมูลส่วนบุคคลและการศึกษา", "user", "sec-personal", i("เลขบัตรประชาชน", t.idCard, !0) + i("คณะ", t.faculty) + i("รหัสสาขา", t.branchCode) + i("สาขา", t.branch, !0) + i("ชื่อเล่น", t.nickname) + i("เพศ", t.gender) + i("วันเกิด", formatThaiDateShort(t.birthDate)) + i("อายุ", t.age ? t.age + " ปี" : "-") + i("โรคประจำตัว", t.disease, !0))}
@@ -1465,15 +1494,47 @@ function openDetail(e) {
     ${r("ข้อมูลติดต่อ", "contact", "sec-personal", i("โทรศัพท์", t.phone) + i("อีเมล", t.email) + i("ที่อยู่ปัจจุบัน", t.currentAddress, !0) + i("ที่อยู่ทะเบียนบ้าน", t.homeAddress, !0))}
     
     ${r("ข้อมูลผู้ปกครอง", "users", "sec-parents", i("ชื่อผู้ปกครอง", t.parentName) + i("ความสัมพันธ์", t.parentRelation) + i("โทรศัพท์", t.parentPhone))}
+
+    ${r("ประวัติการฝึกงาน / สหกิจศึกษา", "building-2", "sec-intern", `
+      <div style="grid-column: span 2; background: var(--warning-soft); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--warning); margin-bottom: 12px;">
+        <div style="font-size: 14px; font-weight: 800; color: var(--warning); margin-bottom: 12px;"><i data-lucide="pin" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;margin-right:4px;"></i> ปี 1 : ฝึกงาน 7-Eleven</div>
+        <div class="detail-grid" style="gap: 16px;">
+          ${i("สาขา 7-Eleven", t.internY1_711Branch)}
+          ${i("พื้นที่ / ภาค", t.internY1_711Area)}
+          ${i("รหัสพนักงาน", t.internY1_711EmpID)}
+        </div>
+      </div>
+
+      <div style="grid-column: span 2; background: var(--info-soft); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--info); margin-bottom: 12px;">
+        <div style="font-size: 14px; font-weight: 800; color: var(--info); margin-bottom: 12px;"><i data-lucide="briefcase" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;margin-right:4px;"></i> ปี 2 : ฝึกงานวิชาชีพ</div>
+        <div class="detail-grid" style="gap: 16px;">
+          ${i("ชื่อบริษัท", t.internY2_Company)}
+          ${i("ตำแหน่ง", t.internY2_Position)}
+          ${i("แผนก", t.internY2_Dept)}
+        </div>
+      </div>
+
+      <div style="grid-column: span 2; background: #f5f3ff; padding: 16px 20px; border-radius: 12px; border: 1px solid #ddd6fe; margin-bottom: 12px;">
+        <div style="font-size: 14px; font-weight: 800; color: #7c3aed; margin-bottom: 12px;"><i data-lucide="briefcase" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;margin-right:4px;"></i> ปี 3 : ฝึกงานวิชาชีพต่อเนื่อง</div>
+        <div class="detail-grid" style="gap: 16px;">
+          ${i("ชื่อบริษัท", t.internY3_Company)}
+          ${i("ตำแหน่ง", t.internY3_Position)}
+          ${i("แผนก", t.internY3_Dept)}
+        </div>
+      </div>
+
+      <div style="grid-column: span 2; background: var(--success-soft); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--success); margin-bottom: 12px;">
+        <div style="font-size: 14px; font-weight: 800; color: var(--success); margin-bottom: 12px;"><i data-lucide="award" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;margin-right:4px;"></i> ปี 4 : สหกิจศึกษา (Co-op)</div>
+        <div class="detail-grid" style="gap: 16px;">
+          ${i("ชื่อบริษัท", t.internY4_Company)}
+          ${i("ตำแหน่ง", t.internY4_Position)}
+          ${i("แผนก", t.internY4_Dept)}
+        </div>
+      </div>
+    `)}
     
-    ${r("ประวัติการฝึกงาน / สหกิจศึกษา", "building-2", "sec-intern", i("ปี1 สาขา 7-Eleven", t.internY1_711Branch) + i("ปี1 พื้นที่", t.internY1_711Area) + i("ปี1 รหัสพนง.", t.internY1_711EmpID) + i("ปี2 บริษัท", t.internY2_Company) + i("ปี2 ตำแหน่ง", t.internY2_Position) + i("ปี2 แผนก", t.internY2_Dept) + i("ปี3 บริษัท", t.internY3_Company) + i("ปี3 ตำแหน่ง", t.internY3_Position) + i("ปี3 แผนก", t.internY3_Dept) + i("ปี4 บริษัท", t.internY4_Company) + i("ปี4 ตำแหน่ง", t.internY4_Position) + i("ปี4 แผนก", t.internY4_Dept))}
-    
-    ${r("การทำงานหลังจบการศึกษา", "briefcase", "sec-job", i("วันที่จบการศึกษา", formatThaiDateShort(t.gradDate)) + i("วันที่เริ่มงาน / บรรจุ", formatThaiDateShort(t.jobStartDate)) + i("บริษัท / องค์กร", t.jobCompany) + i("ตำแหน่ง", t.jobPosition) + i("แผนก / ส่วนงาน", t.jobDept) + i("อัตราเงินเดือน", fmtMoney(t.jobSalary)) + i("สถานะปัจจุบัน", t.jobCurrentStatus) + i("ระยะเวลา", l || "-", !0))}`;
-  document.getElementById("detailFooter").innerHTML = a
-    ? `
-    <button class="btn btn-danger" style="padding:12px 20px;" onclick="closeAllModals();openConfirmDel('${esc(t.idCard)}')"><i data-lucide="trash-2"></i> ลบข้อมูลทั้งหมด</button>
-    <button class="btn btn-warning" style="padding:12px 20px;" onclick="closeAllModals();openEdit('${esc(t.idCard)}')"><i data-lucide="edit-2"></i> แก้ไขข้อมูลทั้งหมด</button>`
-    : '<button class="btn btn-outline" style="padding:12px 20px;" onclick="closeAllModals()">ปิดหน้าต่าง</button>';
+    ${r("การทำงานหลังจบการศึกษา", "briefcase", "sec-job", i("วันที่จบการศึกษา", formatThaiDateShort(t.gradDate)) + i("วันที่เริ่มงาน / บรรจุ", formatThaiDateShort(t.jobStartDate)) + i("บริษัท / องค์กร", t.jobCompany) + i("ตำแหน่ง", t.jobPosition) + i("แผนก / ส่วนงาน", t.jobDept) + i("อัตราเงินเดือน", fmtMoney(t.jobSalary)) + i("สถานะงาน", t.jobCurrentStatus) + i("ระยะเวลา", l || "-", !0))}`;
+  
   lucide.createIcons();
   openModal("modalDetail");
 }
@@ -1495,7 +1556,7 @@ function openCompany(e) {
     <button class="modal-close-fancy" onclick="closeAllModals()"><i data-lucide="x" style="width:24px;height:24px;"></i></button>`;
   let i = "";
   a.forEach((e) => {
-    i += `<div class="list-group-header"><i data-lucide="calendar" style="width:20px;margin-right:8px;"></i> รุ่นปี พ.ศ. ${esc(e)} <span style="font-size:14px; opacity:0.8; font-weight:normal; margin-left:12px;">(รวม ${n[e].length} คน)</span></div>`;
+    i += `<div class="list-group-header"><i data-lucide="calendar" style="width:20px;margin-right:8px;"></i> ปีที่จบ พ.ศ. ${esc(e)} <span style="font-size:14px; opacity:0.8; font-weight:normal; margin-left:12px;">(รวม ${n[e].length} คน)</span></div>`;
     const t = {};
     n[e].forEach((e) => {
       const n =
@@ -1534,7 +1595,7 @@ function getFormHTML() {
     <div class="cat-header bg-blue"><i data-lucide="user" style="width:20px;height:20px;"></i> 1. ข้อมูลการศึกษา และข้อมูลส่วนตัว</div>
     <div class="cat-body form-grid">
       <div class="form-sub-header"><i data-lucide="graduation-cap" style="width:16px;"></i> ข้อมูลการศึกษา</div>
-      <div class="form-group"><label>รุ่นที่จบการศึกษา (พ.ศ.) <span class="required-indicator">*</span></label><input type="text" id="f_gradYear" placeholder="เช่น 67 หรือ 2567" maxlength="4"></div>
+      <div class="form-group"><label>ปีที่จบการศึกษา<span class="required-indicator">*</span></label><input type="text" id="f_gradYear" placeholder="เช่น 67 หรือ 2567" maxlength="4"></div>
       <div class="form-group"><label>เลขบัตรประชาชน <span class="required-indicator">*</span></label><input type="text" id="f_idCard" placeholder="13 หลัก" maxlength="13">
         <div id="idCardNote" style="font-size:12px; color:var(--danger); margin-top:6px; display:none; font-weight:600;">* ระบบไม่อนุญาตให้แก้ไขเลขบัตรฯ (หากผิดให้ลบทิ้งแล้วเพิ่มใหม่)</div>
       </div>
@@ -1618,7 +1679,7 @@ function getFormHTML() {
       <div class="form-group span-2" style="background:var(--accent-soft); padding:24px; border-radius:16px; border:1px solid var(--border-hi);">
         <label style="font-size:15px; color:var(--accent);">สถานะหลังจบการศึกษา <span class="required-indicator">*</span></label>
         <select id="f_jobStatus" onchange="toggleJobFields()" style="font-weight:700;border-color:var(--border-hi); font-size:16px; padding:16px;">
-          <option value="">-- กรุณาเลือกสถานะปัจจุบัน --</option>
+          <option value="">-- กรุณาเลือกสถานะงาน --</option>
           <option value="ทำงาน">ทำงาน / ธุรกิจส่วนตัว</option>
           <option value="ศึกษาต่อ">ศึกษาต่อในประเทศ</option>
           <option value="ศึกษาต่อต่างประเทศ">ศึกษาต่อต่างประเทศ</option>
@@ -1632,7 +1693,7 @@ function getFormHTML() {
         <div class="form-grid">
           <div class="form-group"><label>วันที่เริ่มทำงาน / บรรจุ <span class="required-indicator req-job">*</span></label><input type="text" class="thai-date-mask" id="f_jobStartDate" placeholder="วว/ดด/ปปปป (พ.ศ.)"></div>
           <div class="form-group">
-            <label>สถานะการทำงานปัจจุบัน <span class="required-indicator req-job">*</span></label>
+            <label>สถานะงาน <span class="required-indicator req-job">*</span></label>
             <select id="f_jobCurrentStatus">
               <option value="">-- เลือกสถานะ --</option>
               <option value="ยังทำงานอยู่">ยังทำงานอยู่</option>
@@ -1653,7 +1714,7 @@ function getFormHTML() {
         <div class="divider"></div>
         <div class="form-grid">
           <div class="form-group span-2">
-            <label>รายละเอียดเพิ่มเติม (สถานะปัจจุบัน) <span class="required-indicator">*</span></label>
+            <label>รายละเอียดเพิ่มเติม (สถานะงาน) <span class="required-indicator">*</span></label>
             <select id="f_jobCurrentStatus_other" onchange="document.getElementById('f_jobCurrentStatus').value = this.value;" style="padding:16px; font-size:15px; font-weight:600;">
               <option value="">-- เลือกรายละเอียด --</option>
               <option value="กำลังหางาน">กำลังหางาน</option>
@@ -1800,7 +1861,7 @@ function renderForm(e) {
         if (
           n &&
           (n.classList.add("form-field-error"),
-          !n.parentElement.querySelector(".field-error-msg"))
+            !n.parentElement.querySelector(".field-error-msg"))
         ) {
           let t = document.createElement("div");
           t.className = "field-error-msg show";
@@ -1901,7 +1962,7 @@ function collectFormData() {
 function validateForm() {
   let e = [];
   const t = [
-    { key: "gradYear", label: "รุ่นที่จบการศึกษา" },
+    { key: "gradYear", label: "ปีที่จบการศึกษา" },
     { key: "idCard", label: "เลขบัตรประชาชน" },
     { key: "faculty", label: "คณะ" },
     { key: "branch", label: "สาขา" },
@@ -1941,7 +2002,7 @@ function validateForm() {
     t.push({ key: "jobStartDate", label: "วันที่เริ่มทำงาน" });
     t.push({
       key: "jobCurrentStatus",
-      label: "สถานะปัจจุบัน",
+      label: "สถานะงาน",
       valKey: "jobCurrentStatus",
     });
     t.push({ key: "jobCompany", label: "ชื่อบริษัท" });
