@@ -43,8 +43,23 @@ window.checkSetup = function () {
   }
 };
 
-window.openModal = function (e) { $("modalBackdrop").classList.remove("hidden"); $(e).classList.remove("hidden"); document.body.classList.add("modal-open"); };
-window.closeAllModals = function () { $("modalBackdrop").classList.add("hidden"); document.querySelectorAll(".modal-box").forEach((e) => e.classList.add("hidden")); document.body.classList.remove("modal-open"); hasUnsavedChanges = false; };
+window.openModal = function (e) { 
+  $("modalBackdrop").classList.remove("hidden"); 
+  $(e).classList.remove("hidden"); 
+  document.body.classList.add("modal-open");
+  // Focus first focusable element
+  setTimeout(() => {
+    const focusable = $(e).querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex=\"-1\"])");
+    if (focusable) focusable.focus();
+  }, 100);
+};
+
+window.closeAllModals = function () { 
+  $("modalBackdrop").classList.add("hidden"); 
+  document.querySelectorAll(".modal-box").forEach((e) => e.classList.add("hidden")); 
+  document.body.classList.remove("modal-open"); 
+  hasUnsavedChanges = false; 
+};
 
 window.safeCloseModal = function () {
   if (hasUnsavedChanges) {
@@ -514,11 +529,21 @@ window.confirmImport = async function () {
 window.showToast = function (message, isError = false) {
   const toast = $("toast");
   if (!toast) return;
-  toast.innerHTML = (isError ? '<i data-lucide="alert-circle" style="width:20px;height:20px;"></i>' : '<i data-lucide="check-circle" style="width:20px;height:20px;"></i>') + " " + message;
+  const icon = isError ? '<i data-lucide="alert-circle" style="width:20px;height:20px;"></i>' : '<i data-lucide="check-circle" style="width:20px;height:20px;"></i>';
+  toast.innerHTML = icon + " " + message;
   toast.style.background = isError ? "var(--danger)" : "var(--success)";
+  toast.style.opacity = "1";
   toast.classList.add("show");
   if (window.lucide) lucide.createIcons();
-  setTimeout(() => toast.classList.remove("show"), 3500);
+  const timeout = setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.classList.remove("show");
+  }, 3500);
+  toast.onclick = () => {
+    clearTimeout(timeout);
+    toast.style.opacity = "0";
+    toast.classList.remove("show");
+  };
 };
 
 window.showLoading = function (show, text = "กำลังโหลด...") {
@@ -1384,7 +1409,7 @@ window.openDetail = function (e) {
         </div>
       `)}
       
-      ${r("4. สถานะปัจจุบัน (วงจรชีวิตนักศึกษา)", "briefcase", i("วันที่จบการศึกษา", window.formatThaiDateShort(t.gradDate)) + i("วันที่เริ่มงาน / บรรจุ", window.formatThaiDateShort(t.jobStartDate)) + i("บริษัท / องค์กร", t.jobCompany) + i("ที่ตั้งบริษัท", t.jobCompanyAddress) + i("เบอร์ติดต่อบริษัท", t.jobCompanyPhone) + i("ตำแหน่ง", t.jobPosition) + i("อัตราเงินเดือน", window.fmtMoney(t.jobSalary)) + i("สถานะงาน", t.jobCurrentStatus) + i("เวลาที่ใช้หางาน (นับจากจบ)", t.durationToGetJob) + i("หมายเหตุเพิ่มเติม", t.jobRemark || "-", !0))}
+      ${r("4. สถานะปัจจุบัน", "briefcase", i("วันที่จบการศึกษา", window.formatThaiDateShort(t.gradDate)) + i("วันที่เริ่มงาน / บรรจุ", window.formatThaiDateShort(t.jobStartDate)) + i("บริษัท / องค์กร", t.jobCompany) + i("ที่ตั้งบริษัท", t.jobCompanyAddress) + i("เบอร์ติดต่อบริษัท", t.jobCompanyPhone) + i("ตำแหน่ง", t.jobPosition) + i("อัตราเงินเดือน", window.fmtMoney(t.jobSalary)) + i("สถานะงาน", t.jobCurrentStatus) + i("เวลาที่ใช้หางาน (นับจากจบ)", t.durationToGetJob) + i("หมายเหตุเพิ่มเติม", t.jobRemark || "-", !0))}
     `;
   }
   if (window.lucide) lucide.createIcons();
@@ -1400,7 +1425,7 @@ window.getFormHTML = function () {
   <div class="form-category-card" id="sec-intern"><div class="cat-header"><i data-lucide="building-2"></i> 3. ประวัติการฝึกงาน / สหกิจศึกษา (WBL)</div><div class="cat-body form-grid"><div class="form-note note-yellow span-2" style="justify-content:center; padding:12px; font-size:15px;"><i data-lucide="pin" style="width:20px;height:20px;"></i> ปี 1 : ฝึกงาน 7-Eleven</div><div class="form-group"><label>สาขา 7-Eleven</label><input type="text" id="f_internY1_711Branch" name="internY1_711Branch" placeholder="สาขา..."></div><div class="form-group"><label>พื้นที่ / ภาค</label><input type="text" id="f_internY1_711Area" name="internY1_711Area" placeholder="กทม. / ภาคเหนือ..."></div><div class="form-group span-2"><label>รหัสพนักงานประจำร้าน</label><input type="text" id="f_internY1_711EmpID" name="internY1_711EmpID" placeholder="EMP-XXXXX"></div><div class="divider"></div><div class="form-sub-header"><i data-lucide="briefcase"></i> ปี 2 : ฝึกงานวิชาชีพ</div><div class="form-group"><label>ชื่อบริษัท</label><input type="text" id="f_internY2_Company" name="internY2_Company" placeholder="บริษัท..."></div><div class="form-group"><label>ตำแหน่ง</label><input type="text" id="f_internY2_Position" name="internY2_Position" placeholder="ตำแหน่ง..."></div><div class="form-group span-2"><label>แผนก</label><input type="text" id="f_internY2_Dept" name="internY2_Dept" placeholder="แผนก..."></div><div class="divider"></div><div class="form-sub-header"><i data-lucide="briefcase"></i> ปี 3 : ฝึกงานวิชาชีพต่อเนื่อง</div><div class="form-group"><label>ชื่อบริษัท</label><input type="text" id="f_internY3_Company" name="internY3_Company" placeholder="บริษัท..."></div><div class="form-group"><label>ตำแหน่ง</label><input type="text" id="f_internY3_Position" name="internY3_Position" placeholder="ตำแหน่ง..."></div><div class="form-group span-2"><label>แผนก</label><input type="text" id="f_internY3_Dept" name="internY3_Dept" placeholder="แผนก..."></div><div class="divider"></div><div class="form-note note-green span-2" style="justify-content:center; padding:12px; font-size:15px;"><i data-lucide="award" style="width:20px;height:20px;"></i> ปี 4 : สหกิจศึกษา (Co-op)</div><div class="form-group"><label>ชื่อบริษัท</label><input type="text" id="f_internY4_Company" name="internY4_Company" placeholder="บริษัท..."></div><div class="form-group"><label>ตำแหน่ง</label><input type="text" id="f_internY4_Position" name="internY4_Position" placeholder="ตำแหน่ง..."></div><div class="form-group span-2"><label>แผนก</label><input type="text" id="f_internY4_Dept" name="internY4_Dept" placeholder="แผนก..."></div></div></div>
 
   <div class="form-category-card" id="sec-job">
-    <div class="cat-header"><i data-lucide="briefcase"></i> 4. สถานะปัจจุบัน (วงจรชีวิตนักศึกษา)</div>
+    <div class="cat-header"><i data-lucide="briefcase"></i> 4. สถานะปัจจุบัน</div>
     <div class="cat-body form-grid">
       
       <div class="form-group span-2" style="background:var(--accent-soft); padding:24px; border-radius:12px;">
