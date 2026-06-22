@@ -1979,7 +1979,8 @@ window.openDetail = function(e) {
 
   const hd = document.getElementById("detailHeader");
   if (hd) {
-    hd.innerHTML = `<div><h2 style="margin-top:0; font-size:24px;">${window.esc(t.prefix + t.nameTH + " " + t.surnameTH)}</h2><div class="sub" style="font-size:14.5px; font-weight:500;">${window.esc(t.nameEN + " " + t.surnameEN)} · รหัสนักศึกษา: <span style="color:var(--primary); font-weight:700;">${window.esc(t.studentId)}</span></div></div><div class="flex flex-center gap-12"><span class="badge" style="background:${badgeColor};color:#fff;padding:6px 16px;font-size:13.5px;box-shadow:var(--shadow-sm);">${window.esc(stLabelText)}</span><button type="button" class="close-btn" aria-label="ปิด" onclick="window.closeAllModals()"><i data-lucide="x" style="width:24px;height:24px;"></i></button></div>`;
+    const nameENDisplay = (t.nameEN || "") + (t.surnameEN ? " " + t.surnameEN : "");
+    hd.innerHTML = `<div><h2 style="margin-top:0; font-size:24px;">${window.esc(t.prefix + t.nameTH + " " + t.surnameTH)}</h2><div class="sub" style="font-size:14.5px; font-weight:500;">${nameENDisplay ? window.esc(nameENDisplay) + " · " : ""}รหัสนักศึกษา: <span style="color:var(--primary); font-weight:700;">${window.esc(t.studentId)}</span></div></div><div class="flex flex-center gap-12"><span class="badge" style="background:${badgeColor};color:#fff;padding:6px 16px;font-size:13.5px;box-shadow:var(--shadow-sm);">${window.esc(stLabelText)}</span><button type="button" class="close-btn" aria-label="ปิด" onclick="window.closeAllModals()"><i data-lucide="x" style="width:24px;height:24px;"></i></button></div>`;
   }
   
   const i = (lbl, val, sp = !1) => `<div class="detail-field${sp ? " span-2" : ""}"><label>${lbl}</label><p>${window.esc(val || "-")}</p></div>`;
@@ -1990,7 +1991,7 @@ window.openDetail = function(e) {
   const bd = document.getElementById("detailBody");
   if (bd) {
     bd.innerHTML = `
-      ${r("1. ข้อมูลส่วนบุคคลและการศึกษา", "user", i("ชื่อ (ไทย)", t.prefix + t.nameTH + " " + t.surnameTH, !0) + i("ชื่อ (อังกฤษ)", t.nameEN + " " + t.surnameEN, !0) + i("รหัสนักศึกษา", t.studentId, !0) + i("เลขบัตรประชาชน", t.idCard) + i("รหัสสาขา", t.branchCode) + i("สาขา", t.branch, !0) + i("ชื่อเล่น", t.nickname) + i("เพศ", t.gender) + i("วันเกิด", window.formatThaiDateShort(t.birthDate)) + i("โรคประจำตัว", t.disease, !0) + i("โทรศัพท์", t.phone) + i("อีเมล", t.email) + i("ที่อยู่ปัจจุบัน", t.currentAddress, !0) + i("ที่อยู่ทะเบียนบ้าน", t.homeAddress, !0))
+      ${r("1. ข้อมูลส่วนบุคคลและการศึกษา", "user", i("ชื่อ (ไทย)", t.prefix + t.nameTH + " " + t.surnameTH, !0) + i("ชื่อ (อังกฤษ)", (t.nameEN || "") + (t.surnameEN ? " " + t.surnameEN : ""), !0) + i("รหัสนักศึกษา", t.studentId, !0) + i("เลขบัตรประชาชน", t.idCard) + i("รหัสสาขา", t.branchCode) + i("สาขา", t.branch, !0) + i("ชื่อเล่น", t.nickname) + i("เพศ", t.gender) + i("วันเกิด", window.formatThaiDateShort(t.birthDate)) + i("โรคประจำตัว", t.disease, !0) + i("โทรศัพท์", t.phone) + i("อีเมล", t.email) + i("ที่อยู่ปัจจุบัน", t.currentAddress, !0) + i("ที่อยู่ทะเบียนบ้าน", t.homeAddress, !0))
       
       ${r("2. ข้อมูลผู้ปกครอง", "users", i("ชื่อผู้ปกครอง", t.parentName, !0) + i("ความสัมพันธ์", t.parentRelation) + i("โทรศัพท์", t.parentPhone))}
       
