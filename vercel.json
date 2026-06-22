@@ -1,10 +1,18 @@
 {
   "version": 2,
   "name": "alumni-tracking-system",
-  "buildCommand": "",
-  "outputDirectory": ".",
-  "framework": "static",
+  "cleanUrls": true,
+  "trailingSlash": false,
   "headers": [
+    {
+      "source": "/(.*).html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    },
     {
       "source": "/styles.css",
       "headers": [
@@ -22,21 +30,6 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
-    },
-    {
-      "source": "/(.*).html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600"
-        }
-      ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/alumni.html"
     }
   ]
 }
