@@ -1990,7 +1990,7 @@ window.openDetail = function(e) {
   const bd = document.getElementById("detailBody");
   if (bd) {
     bd.innerHTML = `
-      ${r("1. ข้อมูลส่วนบุคคลและการศึกษา", "user", i("รหัสนักศึกษา", t.studentId, !0) + i("เลขบัตรประชาชน", t.idCard) + i("รหัสสาขา", t.branchCode) + i("สาขา", t.branch, !0) + i("ชื่อเล่น", t.nickname) + i("เพศ", t.gender) + i("วันเกิด", window.formatThaiDateShort(t.birthDate)) + i("โรคประจำตัว", t.disease, !0) + i("โทรศัพท์", t.phone) + i("อีเมล", t.email) + i("ที่อยู่ปัจจุบัน", t.currentAddress, !0) + i("ที่อยู่ทะเบียนบ้าน", t.homeAddress, !0))}
+      ${r("1. ข้อมูลส่วนบุคคลและการศึกษา", "user", i("ชื่อ (ไทย)", t.prefix + t.nameTH + " " + t.surnameTH, !0) + i("ชื่อ (อังกฤษ)", t.nameEN + " " + t.surnameEN, !0) + i("รหัสนักศึกษา", t.studentId, !0) + i("เลขบัตรประชาชน", t.idCard) + i("รหัสสาขา", t.branchCode) + i("สาขา", t.branch, !0) + i("ชื่อเล่น", t.nickname) + i("เพศ", t.gender) + i("วันเกิด", window.formatThaiDateShort(t.birthDate)) + i("โรคประจำตัว", t.disease, !0) + i("โทรศัพท์", t.phone) + i("อีเมล", t.email) + i("ที่อยู่ปัจจุบัน", t.currentAddress, !0) + i("ที่อยู่ทะเบียนบ้าน", t.homeAddress, !0))
       
       ${r("2. ข้อมูลผู้ปกครอง", "users", i("ชื่อผู้ปกครอง", t.parentName, !0) + i("ความสัมพันธ์", t.parentRelation) + i("โทรศัพท์", t.parentPhone))}
       
