@@ -1458,7 +1458,7 @@ window.filterDashCompanies = function(){
   }
 };
 
-window.renderDash = function() {
+window.renderDash = function() { 
   const e = $("pageDash");
   let dashStudents = STUDENTS;
   if (dashYear) dashStudents = dashStudents.filter(s => String(s.batchYear) === dashYear);
