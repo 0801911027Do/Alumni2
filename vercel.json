@@ -2,67 +2,42 @@
   "version": 2,
   "name": "alumni-tracking-system",
   "public": true,
-  "builds": [
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "framework": "static",
+  "headers": [
     {
-      "src": "alumni.html",
-      "use": "@vercel/static"
+      "source": "/styles.css",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     },
     {
-      "src": "styles.css",
-      "use": "@vercel/static"
+      "source": "/app.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     },
     {
-      "src": "app.js",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "robots.txt",
-      "use": "@vercel/static"
+      "source": "/(.*).html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/styles.css",
-      "dest": "/styles.css",
-      "headers": {
-        "cache-control": "public, max-age=31536000, immutable",
-        "Content-Type": "text/css; charset=utf-8"
-      }
-    },
-    {
-      "src": "/app.js",
-      "dest": "/app.js",
-      "headers": {
-        "cache-control": "public, max-age=31536000, immutable",
-        "Content-Type": "application/javascript; charset=utf-8"
-      }
-    },
-    {
-      "src": "/alumni.html",
-      "dest": "/alumni.html",
-      "headers": {
-        "cache-control": "public, max-age=3600",
-        "Content-Type": "text/html; charset=utf-8"
-      }
-    },
-    {
-      "src": "/robots.txt",
-      "dest": "/robots.txt",
-      "headers": {
-        "cache-control": "public, max-age=604800",
-        "Content-Type": "text/plain; charset=utf-8"
-      }
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/alumni.html",
-      "headers": {
-        "cache-control": "public, max-age=3600, stale-while-revalidate=86400"
-      }
+      "source": "/(.*)",
+      "destination": "/alumni.html"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "buildCommand": "echo 'Static site'"
+  ]
 }
