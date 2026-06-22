@@ -1,6 +1,7 @@
 {
   "version": 2,
   "name": "alumni-tracking-system",
+  "outputDirectory": ".",
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
