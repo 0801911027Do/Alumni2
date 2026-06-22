@@ -5,8 +5,8 @@
   "main": "alumni.html",
   "scripts": {
     "start": "echo 'Static site - no build needed'",
-    "build": "npx terser alumni.js -o alumni.js -c -m",
-    "minify": "npx terser alumni.js -o alumni.js -c -m --comments false"
+    "build": "echo 'Static site - no build needed'",
+    "dev": "echo 'Static site - no build needed'"
   },
   "keywords": [
     "alumni",
