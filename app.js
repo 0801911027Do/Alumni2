@@ -1,4 +1,3 @@
-
 const API_URL = "https://script.google.com/macros/s/AKfycbwcPXx1vNxGrbSUTOEL8kERkGrx4e8rSSwcApYtQow7awF9NSxxFGkUCTCo3bBp26Sw/exec";
 
 // Lazy Load XLSX function to improve performance
@@ -203,7 +202,7 @@ const FORM_FIELDS = [
 ];
 
 let STUDENTS = [], currentUser = null, currentPage = "dash", filterStatus = "ทั้งหมด", filterBr = "ทั้งหมด", filterBrId = "ทั้งหมด", filterFac = "ทั้งหมด", editingIdCard = null, formData = {}, deleteId = null, isFetching = false, hasAttemptedSave = false, hasUnsavedChanges = false;
-let currentTablePage = 1;
+let currentTablePage = 1, currentCompanyPage = 1;
 const itemsPerPage = 25;
 
 window.formatThaiDateShort = function (e) {
@@ -712,8 +711,15 @@ window.fetchData = async function (e = false) {
 };
 
 window.updateDashboardAndTable = function () {
-  const e = [...new Set(STUDENTS.map(e => e.batchYear))].filter(Boolean).sort().reverse();
-  const companies = [...new Set(STUDENTS.map(e => e.jobCompany ? e.jobCompany.trim().toUpperCase() : null))].filter(c => c && c !== "-").sort();
+  const companiesPerPage = 10;
+  const allCompanies = [...new Set(STUDENTS.map(e => e.jobCompany ? e.jobCompany.trim().toUpperCase() : null))].filter(c => c && c !== "-").sort();
+  const totalCompanyPages = Math.ceil(allCompanies.length / companiesPerPage);
+  
+  if (currentCompanyPage > totalCompanyPages) currentCompanyPage = Math.max(1, totalCompanyPages);
+  if (currentCompanyPage < 1) currentCompanyPage = 1;
+  
+  const startIdx = (currentCompanyPage - 1) * companiesPerPage;
+  const paginatedCompanies = allCompanies.slice(startIdx, startIdx + companiesPerPage);
 
   if ($("yearFilter")) {
     const currVal = $("yearFilter").value;
@@ -724,9 +730,26 @@ window.updateDashboardAndTable = function () {
 
   if ($("companyFilter")) {
     const cCurrVal = $("companyFilter").value;
-    $("companyFilter").innerHTML = '<option value="" style="color:var(--primary); font-weight:800;">ทุกบริษัทที่ทำงาน</option>' + companies.map(c => `<option value="${c}" style="color:var(--text-bold);">${c}</option>`).join("");
+    $("companyFilter").innerHTML = '<option value="" style="color:var(--primary); font-weight:800;">ทุกบริษัทที่ทำงาน</option>' + paginatedCompanies.map(c => `<option value="${c}" style="color:var(--text-bold);">${c}</option>`).join("");
     $("companyFilter").value = cCurrVal;
     $("companyFilter").style.color = cCurrVal === "" ? "var(--primary)" : "var(--text-bold)";
+  }
+
+  if ($("companyPaginationContainer")) {
+    let paginationHTML = '';
+    if (totalCompanyPages > 1) {
+      paginationHTML = `
+        <button class="page-btn" onclick="currentCompanyPage = Math.max(1, currentCompanyPage - 1); window.updateDashboardAndTable();" ${currentCompanyPage === 1 ? 'disabled' : ''} title="หน้าก่อนหน้า" style="padding:4px 8px;">
+          <i data-lucide="chevron-left" style="width:14px;"></i>
+        </button>
+        <span class="page-info" style="font-size:12px; padding:0 8px; color:var(--primary); align-self:center;">หน้า ${currentCompanyPage} / ${totalCompanyPages}</span>
+        <button class="page-btn" onclick="currentCompanyPage = Math.min(${totalCompanyPages}, currentCompanyPage + 1); window.updateDashboardAndTable();" ${currentCompanyPage === totalCompanyPages ? 'disabled' : ''} title="หน้าถัดไป" style="padding:4px 8px;">
+          <i data-lucide="chevron-right" style="width:14px;"></i>
+        </button>
+      `;
+    }
+    $("companyPaginationContainer").innerHTML = paginationHTML;
+    if (window.lucide) lucide.createIcons();
   }
 
   if ("dash" === currentPage) window.renderDash(); if ("students" === currentPage) window.renderTable();
@@ -810,7 +833,7 @@ window.getFilteredStudents = function () {
       (["ทำงานแล้ว", "ทำงาน"].includes(filterStatus) && (["ทำงานบริษัท", "ทำงานอิสระ", "ทำงาน"].includes(e.jobStatus) || (e.jobStatus === "อื่นๆ" && e.jobCurrentStatus === "ช่วยธุรกิจครอบครัว"))) ||
       ("ศึกษาต่อ" === filterStatus && ["ศึกษาต่อ", "ศึกษาต่อต่างประเทศ"].includes(e.jobStatus)) ||
       ("พ้นสภาพ" === filterStatus && (["พ้นสภาพ", "ไม่จบการศึกษา", "ดรอปเรียน"].includes(e.jobStatus) || (e.jobStatus === "อื่นๆ" && ["ลาออก", "ย้ายสถานศึกษา"].includes(e.jobCurrentStatus)))) ||
-      ("กำลังศึกษา" === filterStatus && (["กำลังศึกษา"].includes(e.jobStatus) || (e.jobStatus === "อื่นๆ" && ["รออนุมัติจบ", "กำลังศึกษาอยู่ (ปี 1-4)"].includes(e.jobCurrentStatus)))) ||
+      ("กำลังศึกษา" === filterStatus && (["กำลังศึกษา"].includes(e.jobStatus) || (e.jobStatus === "อื่นๆ" && ["รออนุมัติจบ", "กำลังศึกษาอยู่ (ปี 1-4)", "รอลงทะเบียนเรียน"].includes(e.jobCurrentStatus)))) ||
       ("ติดภารกิจ" === filterStatus && e.jobStatus === "อื่นๆ" && ["ติดทหาร", "ปัญรักษาสุขภาพ", "อุปสมบท"].includes(e.jobCurrentStatus)) ||
       ("ว่างงาน" === filterStatus && ["ว่างงาน", "กำลังหางาน"].includes(e.jobStatus) || (e.jobStatus === "อื่นๆ" && ["กำลังหางาน", "เตรียมสอบราชการ", "เตรียมศึกษาต่อ"].includes(e.jobCurrentStatus)));
 
@@ -864,7 +887,7 @@ window.renderDash = function () {
 
   const total = dashStudents.length;
   const current = dashStudents.filter(s => ["กำลังศึกษา", "ดรอปเรียน"].includes(s.jobStatus) || (s.jobStatus === "อื่นๆ" && ["รออนุมัติจบ", "กำลังศึกษาอยู่ (ปี 1-4)", "รอลงทะเบียนเรียน"].includes(s.jobCurrentStatus)));
-  const dropouts = dashStudents.filter(s => ["พ้นสภาพ", "ไม่จบการศึกษา"].includes(s.jobStatus) || (s.jobStatus === "อื่นๆ" && ["ลาออก", "ย้ายสถานศึกษา"].includes(s.jobCurrentStatus)));
+  const dropouts = dashStudents.filter(s => ["พ้นสภาพ", "ไม่จบการศึกษา", "ดรอปเรียน"].includes(s.jobStatus) || (s.jobStatus === "อื่นๆ" && ["ลาออก", "ย้ายสถานศึกษา"].includes(s.jobCurrentStatus)));
   const grads = dashStudents.filter(s => !["พ้นสภาพ", "ไม่จบการศึกษา", "ดรอปเรียน", "กำลังศึกษา"].includes(s.jobStatus) && !(s.jobStatus === "อื่นๆ" && ["ลาออก", "ย้ายสถานศึกษา", "รออนุมัติจบ", "กำลังศึกษาอยู่ (ปี 1-4)", "รอลงทะเบียนเรียน"].includes(s.jobCurrentStatus)));
   const totalGrads = grads.length;
 
@@ -964,9 +987,10 @@ window.renderDash = function () {
       <div class="card"><div class="card-header" style="display:flex; flex-direction:column; gap:16px; align-items:stretch;"><div style="font-size: 18px; display: flex; align-items: center;"><i data-lucide="building-2" style="width:20px; margin-right:8px; color:var(--primary);"></i> บริษัทที่รับเข้าทำงาน</div><div style="position: relative;"><i data-lucide="search" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); width: 18px; height: 18px;"></i><input type="search" id="dashCompanySearch" placeholder="พิมพ์ค้นหาชื่อบริษัท..." oninput="window.filterDashCompanies()" style="width: 100%; padding: 10px 16px 10px 42px; border-radius: 8px; border: 1px solid var(--border-hi); font-size: 14px; outline: none; background: var(--bg);" /></div></div><div class="card-body" style="height:480px;overflow-y:auto;padding:16px;display:grid;grid-template-columns:1fr;gap:12px;align-content:start;">${C.length ? C.map((item, n) => `<div class="person-item dash-company-item" data-name="${window.esc(item.name).toLowerCase()}" style="margin:0; padding:12px 16px;" onclick="window.openCompany('${esc(item.name)}')"><div class="flex flex-center gap-16"><div class="co-rank" style="background:var(--bg);color:var(--text-muted);width:32px;height:32px;border-radius:8px;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;">${n + 1}</div><span style="font-size:15px;font-weight:700;color:var(--text-bold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;">${esc(item.name)}</span></div><div class="flex flex-center gap-12"><span style="font-size:14px;font-weight:700;color:var(--primary); background:var(--primary-soft); padding:4px 10px; border-radius:12px;">${item.count} คน</span></div></div>`).join("") : '<div class="empty-state" style="padding:48px;">ไม่พบข้อมูลบริษัท</div>'}<div id="dashCompanyEmpty" class="empty-state hidden" style="padding:32px;">ไม่พบชื่อบริษัทที่ค้นหา</div></div></div>
     </div>
     
-    <div class="chart-grid fade-in" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+    <div class="chart-grid fade-in" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 32px;">
       <div class="card"><div class="card-header">กราฟจำนวนนักศึกษาแยกตามสาขา</div><div class="card-body"><div class="chart-wrapper" style="height:320px;"><canvas id="branchChart"></canvas></div></div></div>
       <div class="card"><div class="card-header">กราฟแนวโน้มการรับเข้าทำงานย้อนหลัง ${h.length} รุ่น</div><div class="card-body"><div class="chart-wrapper" style="height:320px;"><canvas id="trendChart"></canvas></div></div></div>
+      <div class="card"><div class="card-header">อัตราการตอบกลับข้อมูล (Alumni Return Rate)</div><div class="card-body"><div class="chart-wrapper" style="height:320px;"><canvas id="returnRateChart"></canvas></div></div></div>
     </div>
   `;
 
@@ -976,6 +1000,7 @@ window.renderDash = function () {
   if (window.Chart) {
     if (window.trendChartInst) window.trendChartInst.destroy();
     if (window.branchChartInst) window.branchChartInst.destroy();
+    if (window.returnRateChartInst) window.returnRateChartInst.destroy();
 
     const branchLabels = Object.keys(E);
     const branchData = branchLabels.map(k => E[k].total);
@@ -992,6 +1017,36 @@ window.renderDash = function () {
         type: "line",
         data: { labels: h.map((e) => `รหัส ${e}`), datasets: [{ label: "ผู้สำเร็จการศึกษาทั้งหมด", data: f, borderColor: "#CBD5E1", fill: !1, tension: 0.3, pointRadius: 4 }, { label: "ผู้ได้งานทำ", data: b, borderColor: "#059669", backgroundColor: "rgba(5, 150, 105, 0.1)", borderWidth: 3, fill: !0, tension: 0.3, pointRadius: 5 }] },
         options: { responsive: !0, maintainAspectRatio: !1, plugins: { legend: { position: 'bottom', labels: { font: { size: 13, family: "'Sarabun', sans-serif" } } } }, scales: { y: { beginAtZero: !0, ticks: { stepSize: 1, precision: 0, font: { size: 13, family: "'Sarabun', sans-serif" } } }, x: { ticks: { font: { size: 14 } } } } }
+      });
+    }
+
+    if ($("returnRateChart")) {
+      const gradCount = grads.length;
+      const withJobData = grads.filter(s => s.jobStatus && s.jobStatus !== "" && s.jobStatus !== "-").length;
+      const withoutJobData = gradCount - withJobData;
+      
+      const returnedPct = gradCount > 0 ? Math.round((withJobData / gradCount) * 100) : 0;
+      const notReturnedPct = 100 - returnedPct;
+      
+      window.returnRateChartInst = new Chart($("returnRateChart"), {
+        type: "doughnut",
+        data: {
+          labels: ["ให้ข้อมูลแล้ว", "ยังไม่ให้ข้อมูล"],
+          datasets: [{
+            data: [returnedPct, notReturnedPct],
+            backgroundColor: ["#10b981", "#d1d5db"],
+            borderColor: ["#047857", "#9ca3af"],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: !0,
+          maintainAspectRatio: !1,
+          plugins: {
+            legend: { position: 'bottom', labels: { font: { size: 13, family: "'Sarabun', sans-serif" }, padding: 16, usePointStyle: !0 } },
+            tooltip: { callbacks: { label: function(context) { return context.label + ": " + context.parsed + "% (" + (context.label.includes("ให้ข้อมูล") ? withJobData : withoutJobData) + " คน)"; } } }
+          }
+        }
       });
     }
   }
@@ -1047,7 +1102,7 @@ window.renderTable = function () {
       <td>
         <div style="display:flex; align-items:center; gap:12px;">
           <div style="display:flex;flex-direction:column;">
-            <div style="font-weight:800;font-size:15px;color:var(--text-bold);display:flex;align-items:center;">${window.esc(e.prefix)}${window.esc(e.nameTH)} ${window.esc(e.surnameTH)} ${genderIcon}</div>
+            <div style="font-weight:800;font-size:15px;color:var(--text-bold);display:flex;align-items:center;gap:12px;">${window.esc(e.prefix)}${window.esc(e.nameTH)} ${window.esc(e.surnameTH)} ${genderIcon}</div>
             <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">เลขบัตร ปชช: ${window.esc(e.idCard)}</div>
           </div>
         </div>
@@ -1200,8 +1255,8 @@ window.openGroupModal = function (title, icon, dataList, customLabelFn = null) {
 
   const ySet = new Set(dataList.map(s => s.batchYear || "ไม่ระบุ"));
   const bSet = new Set(dataList.map(s => (s.branch || "ไม่ระบุสาขา") + (s.branchCode ? ` (${s.branchCode})` : "")));
-  const yOpts = '<option value="" style="color:var(--primary); font-weight:800;">ทุกรหัส</option>' + Array.from(ySet).sort().map(y => `<option value="${y}" style="color:var(--text-bold);">รหัส ${y}</option>`).join('');
-  const bOpts = '<option value="" style="color:var(--primary); font-weight:800;">ทุกสาขา</option>' + Array.from(bSet).sort().map(b => `<option value="${b}" style="color:var(--text-bold);">${b}</option>`).join('');
+  const yOpts = '<option value="" style="color:var(--text-bold); font-weight:700;">ทุกรหัสรุ่น</option>' + Array.from(ySet).sort().map(y => `<option value="${y}">รหัส ${y}</option>`).join('');
+  const bOpts = '<option value="" style="color:var(--text-bold); font-weight:700;">ทุกสาขา</option>' + Array.from(bSet).sort().map(b => `<option value="${b}">${b}</option>`).join('');
 
   $("listModalHeader").innerHTML = `
     <div style="width: 100%;">
@@ -1370,7 +1425,7 @@ window.openDetail = function (e) {
   const bd = document.getElementById("detailBody");
   if (bd) {
     bd.innerHTML = `
-      ${r("1. ข้อมูลส่วนบุคคลและการศึกษา", "user", i("รหัสนักศึกษา", t.studentId, !0) + i("เลขบัตรประชาชน", t.idCard) + i("รหัสสาขา", t.branchCode) + i("สาขา", t.branch, !0) + i("ชื่อเล่น", t.nickname) + i("เพศ", t.gender) + i("วันเกิด", window.formatThaiDateShort(t.birthDate)) + i("โรคประจำตัว", t.disease, !0) + i("โทรศัพท์", t.phone) + i("อีเมล", t.email) + i("ที่อยู่ปัจจุบัน", t.currentAddress, !0) + i("ที่อยู่ทะเบียนบ้าน", t.homeAddress, !0))}
+      ${r("1. ข้อมูลส่วนบุคคลและการศึกษา", "user", i("รหัสนักศึกษา", t.studentId, !0) + i("เลขบัตรประชาชน", t.idCard) + i("รหัสสาขา", t.branchCode) + i("สาขา", t.branch, !0) + i("ชื่อเล่น", t.nickname) + i("เพศ", t.gender) + i("วันเกิด", window.formatThaiDateShort(t.birthDate)) + i("โรคประจำตัว", t.disease, !0) + i("โทรศัพท์", t.phone) + i("อีเมล", t.email) + i("ที่อยู่ปัจจุบัน", t.currentAddress, !0) + i("ที่อยู่ตามทะเบียนบ้าน", t.homeAddress, !0))}
       
       ${r("2. ข้อมูลผู้ปกครอง", "users", i("ชื่อผู้ปกครอง", t.parentName, !0) + i("ความสัมพันธ์", t.parentRelation) + i("โทรศัพท์", t.parentPhone))}
       
@@ -1418,7 +1473,7 @@ window.openDetail = function (e) {
 
 window.getFormHTML = function () {
   return `
-  <div class="form-category-card" id="sec-personal"><div class="cat-header"><i data-lucide="user"></i> 1. ข้อมูลส่วนบุคคลและการศึกษา</div><div class="cat-body form-grid"><div class="form-sub-header"><i data-lucide="graduation-cap"></i> ข้อมูลการศึกษา</div><div class="form-group span-2" style="background:var(--primary-soft);padding:24px;border-radius:12px;border:1px solid rgba(5,150,105,0.2);margin-bottom:0;"><label style="margin-top:0;">รหัสนักศึกษา <span class="required-indicator">*</span></label><input type="text" id="f_studentId" name="studentId" placeholder="10 หลัก (เช่น 6752300852)" maxlength="10" style="font-size:16px; font-weight:700;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value.length>=2){let p=this.value.substring(0,2); document.getElementById('f_batchYear').value=p;}"></div><div class="form-group"><label>รหัสรุ่น (Batch) <span class="required-indicator">*</span></label><input type="text" id="f_batchYear" name="batchYear" placeholder="เช่น 67" maxlength="2" readonly></div><div class="form-group"><label>เลขบัตรประชาชน <span class="required-indicator">*</span></label><input type="text" id="f_idCard" name="idCard" placeholder="13 หลัก" maxlength="13" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div><input type="hidden" id="f_faculty" name="faculty" value="คณะวิศวกรรมศาสตร์และเทคโนโลยี"><div class="form-group span-2" style="background:var(--bg);padding:24px;border-radius:12px;border:1px solid var(--border);margin-bottom:0;"><label style="margin-top:0;">สาขาวิชา <span class="required-indicator">*</span></label><div id="form-branch-btns" style="display:flex;flex-wrap:wrap;gap:8px;"></div><input type="hidden" id="f_branch" name="branch"></div><div class="form-group span-2"><label>รหัสสาขา</label><input type="text" id="f_branchCode" name="branchCode" readonly placeholder="เลือกระบุสาขาด้านบนเพื่อเติมรหัสอัตโนมัติ"></div><div class="form-sub-header" style="margin-top:16px;"><i data-lucide="user-circle"></i> ข้อมูลส่วนบุคคล</div><div class="form-group"><label>คำนำหน้า</label><select id="f_prefix" name="prefix"><option value="">เลือก</option><option>นาย</option><option>นางสาว</option></select></div><div class="form-group"><label>เพศ</label><select id="f_gender" name="gender"><option value="">เลือก</option><option>ชาย</option><option>หญิง</option></select></div><div class="form-group"><label>ชื่อจริง (ไทย) <span class="required-indicator">*</span></label><input type="text" id="f_nameTH" name="nameTH"></div><div class="form-group"><label>นามสกุล (ไทย) <span class="required-indicator">*</span></label><input type="text" id="f_surnameTH" name="surnameTH"></div><div class="form-group"><label>ชื่อจริง (อังกฤษ)</label><input type="text" id="f_nameEN" name="nameEN"></div><div class="form-group"><label>นามสกุล (อังกฤษ)</label><input type="text" id="f_surnameEN" name="surnameEN"></div><div class="form-group"><label>ชื่อเล่น</label><input type="text" id="f_nickname" name="nickname"></div><div class="form-group"><label>วันเกิด</label><input type="date" id="f_birthDate" name="birthDate"></div><div class="form-group span-2"><label>โรคประจำตัว</label><input type="text" id="f_disease" name="disease" placeholder="หากไม่มีให้เว้นว่างไว้"></div><div class="form-sub-header" style="margin-top:16px;"><i data-lucide="map-pin"></i> ข้อมูลติดต่อ</div><div class="form-group"><label>เบอร์โทรศัพท์ <span class="required-indicator">*</span></label><input type="tel" id="f_phone" name="phone" placeholder="08xxxxxxxx (10 หลัก)" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div><div class="form-group"><label>อีเมล</label><input type="email" id="f_email" name="email" placeholder="email@example.com"></div><div class="form-group span-2"><label>ที่อยู่ปัจจุบัน</label><input type="text" id="f_currentAddress" name="currentAddress" placeholder="บ้านเลขที่ ถนน เขต จังหวัด รหัสไปรษณีย์"></div><div class="form-group span-2"><label>ที่อยู่ทะเบียนบ้าน</label><input type="text" id="f_homeAddress" name="homeAddress" placeholder="บ้านเลขที่ ถนน เขต จังหวัด รหัสไปรษณีย์"></div></div></div>
+  <div class="form-category-card" id="sec-personal"><div class="cat-header"><i data-lucide="user"></i> 1. ข้อมูลส่วนบุคคลและการศึกษา</div><div class="cat-body form-grid"><div class="form-sub-header"><i data-lucide="graduation-cap"></i> ข้อมูลการศึกษา</div><div class="form-group span-2" style="background:var(--primary-soft);padding:24px;border-radius:12px;border:1px solid rgba(5,150,105,0.2);margin-bottom:0;"><label style="margin-top:0;">รหัสนักศึกษา <span class="required-indicator">*</span></label><input type="text" id="f_studentId" name="studentId" placeholder="10 หลัก (เช่น 6752300852)" maxlength="10" style="font-size:16px; font-weight:700;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value.length>=2){let p=this.value.substring(0,2); document.getElementById('f_batchYear').value=p;}"></div><div class="form-group"><label>รหัสรุ่น (Batch) <span class="required-indicator">*</span></label><input type="text" id="f_batchYear" name="batchYear" placeholder="เช่น 67" maxlength="2" readonly></div><div class="form-group"><label>เลขบัตรประชาชน <span class="required-indicator">*</span></label><input type="text" id="f_idCard" name="idCard" placeholder="13 หลัก" maxlength="13" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div><input type="hidden" id="f_faculty" name="faculty" value="คณะวิศวกรรมศาสตร์และเทคโนโลยี"><div class="form-group span-2" style="background:var(--bg);padding:24px;border-radius:12px;border:1px solid var(--border);margin-bottom:0;"><label style="margin-top:0;">สาขาวิชา <span class="required-indicator">*</span></label><div id="form-branch-btns" style="display:flex;flex-wrap:wrap;gap:8px;"></div><input type="hidden" id="f_branch" name="branch"></div><div class="form-group span-2"><label>รหัสสาขา</label><input type="text" id="f_branchCode" name="branchCode" readonly placeholder="เลือกระบุสาขาด้านบนเพื่อเติมรหัสอัตโนมัติ"></div><div class="form-sub-header" style="margin-top:16px;"><i data-lucide="user-circle"></i> ข้อมูลส่วนบุคคล</div><div class="form-group"><label>คำนำหน้า</label><select id="f_prefix" name="prefix"><option value="">เลือก</option><option>นาย</option><option>นางสาว</option></select></div><div class="form-group"><label>เพศ</label><select id="f_gender" name="gender"><option value="">เลือก</option><option>ชาย</option><option>หญิง</option></select></div><div class="form-group"><label>ชื่อจริง (ไทย) <span class="required-indicator">*</span></label><input type="text" id="f_nameTH" name="nameTH"></div><div class="form-group"><label>นามสกุล (ไทย) <span class="required-indicator">*</span></label><input type="text" id="f_surnameTH" name="surnameTH"></div><div class="form-group"><label>ชื่อจริง (อังกฤษ)</label><input type="text" id="f_nameEN" name="nameEN"></div><div class="form-group"><label>นามสกุล (อังกฤษ)</label><input type="text" id="f_surnameEN" name="surnameEN"></div><div class="form-group"><label>ชื่อเล่น</label><input type="text" id="f_nickname" name="nickname"></div><div class="form-group"><label>วันเกิด</label><input type="date" id="f_birthDate" name="birthDate"></div><div class="form-group span-2"><label>โรคประจำตัว</label><input type="text" id="f_disease" name="disease" placeholder="หากไม่มีให้เว้นว่างไว้"></div><div class="form-sub-header" style="margin-top:16px;"><i data-lucide="map-pin"></i> ข้อมูลติดต่อ</div><div class="form-group"><label>เบอร์โทรศัพท์ <span class="required-indicator">*</span></label><input type="tel" id="f_phone" name="phone" placeholder="08xxxxxxxx (10 หลัก)" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div><div class="form-group"><label>อีเมล</label><input type="email" id="f_email" name="email" placeholder="email@example.com"></div><div class="form-group span-2"><label>ที่อยู่ปัจจุบัน</label><input type="text" id="f_currentAddress" name="currentAddress" placeholder="บ้านเลขที่ ถนน เขต จังหวัด รหัสไปรษณีย์"></div><div class="form-group span-2"><label>ที่อยู่ตามทะเบียนบ้าน</label><input type="text" id="f_homeAddress" name="homeAddress" placeholder="บ้านเลขที่ ถนน เขต จังหวัด รหัสไปรษณีย์"></div></div></div>
 
   <div class="form-category-card" id="sec-parents"><div class="cat-header"><i data-lucide="users"></i> 2. ข้อมูลผู้ปกครอง</div><div class="cat-body form-grid"><div class="form-group span-2"><label>ชื่อ-สกุลผู้ปกครอง</label><input id="f_parentName" name="parentName" placeholder="ระบุ ชื่อ-นามสกุล"></div><div class="form-group"><label>โทรศัพท์ผู้ปกครอง</label><input type="tel" id="f_parentPhone" name="parentPhone" placeholder="10 หลัก" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div><div class="form-group"><label>ความสัมพันธ์</label><select id="f_parentRelation" name="parentRelation"><option value="">เลือกความสัมพันธ์</option><option>บิดา</option><option>มารดา</option><option>พี่ชาย</option><option>น้องชาย</option><option>พี่สาว</option><option>น้องสาว</option><option>ปู่/ย่า/ตา/ยาย</option><option>อื่นๆ</option></select></div></div></div>
 
@@ -1750,7 +1805,7 @@ window.toggleJobFields = function () {
         opts += '<option value="กำลังหางาน">กำลังหางาน</option><option value="เตรียมสอบราชการ">เตรียมสอบราชการ / รัฐวิสาหกิจ</option><option value="เตรียมศึกษาต่อ">เตรียมตัวศึกษาต่อ</option><option value="อื่นๆ">อื่นๆ (โปรดระบุในหมายเหตุ)</option>';
       }
       else if (e === "ศึกษาต่อ" || e === "ศึกษาต่อต่างประเทศ") {
-        opts += '<option value="กำลังศึกษาต่อไทย">กำลังศึกษาต่อในประเทศ</option><option value="กำลังศึกษาต่อตปท">กำลังศึกษาต่อต่างประเทศ</option><option value="กำลังเตรียมตัวสอบ">กำลังเตรียมตัวสอบเรียนต่อ</option>';
+        opts += '<option value="กำลังศึกษาต่อไทย">กำลังศึกษาต่อในประเทศ</option><option value="กำลังศึกษาต่อต่างประเทศ">กำลังศึกษาต่อต่างประเทศ</option><option value="กำลังเตรียมตัวสอบ">กำลังเตรียมตัวสอบเรียนต่อ</option>';
       }
       else if (e === "อื่นๆ") {
         opts += '<option value="รออนุมัติจบ">รออนุมัติจบ / รอรับปริญญา</option><option value="ช่วยธุรกิจครอบครัว">ช่วยธุรกิจครอบครัว</option><option value="ติดทหาร">ติดภารกิจทหาร / เกณฑ์ทหาร / อุปสมบท</option><option value="ปัญหาสุขภาพ">พักรักษาตัว / ปัญหาสุขภาพ</option><option value="ลาออก">ลาออก</option><option value="ย้ายสถานศึกษา">ย้ายสถานศึกษา / เปลี่ยนคณะ</option><option value="อื่นๆ">อื่นๆ (โปรดระบุในหมายเหตุ)</option>';
@@ -1862,9 +1917,9 @@ window.openManual = function () {
                     <i data-lucide="monitor" style="width: 48px; height: 48px; color: var(--primary); margin: 12px 0; display:none;"></i>
                 </div>
                 <div style="text-align: center; background: var(--bg-hover); padding: 12px; border-radius: 12px; border: 1px dashed var(--border-hi);">
-                    <div style="font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--primary);">3. เลือกไฟล์ .xlsx หรือ .csv</div>
+                    <div style="font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--success);">3. เลือกไฟล์ .xlsx หรือ .csv</div>
                     <img src="image_71ac75.png" alt="เลือกไฟล์" style="max-width: 100%; height: 120px; object-fit: cover; object-position: left top; border-radius: 6px; box-shadow: var(--shadow-sm);" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                    <i data-lucide="file-spreadsheet" style="width: 48px; height: 48px; color: var(--primary); margin: 12px 0; display:none;"></i>
+                    <i data-lucide="file-spreadsheet" style="width: 48px; height: 48px; color: var(--success); margin: 12px 0; display:none;"></i>
                 </div>
                 <div style="text-align: center; background: var(--bg-hover); padding: 12px; border-radius: 12px; border: 1px dashed var(--border-hi);">
                     <div style="font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--success);">4. บันทึกลง Google Sheets ทันที</div>
