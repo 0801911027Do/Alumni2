@@ -1,7 +1,6 @@
 {
   "version": 2,
   "name": "alumni-tracking-system",
-  "public": true,
   "buildCommand": "",
   "outputDirectory": ".",
   "framework": "static",
