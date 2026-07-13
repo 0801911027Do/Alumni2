@@ -2783,7 +2783,6 @@ window.openManual = function() {
       pPage.style.display = "flex";
       pPage.style.flexDirection = "column";
       
-      // ลิเลียนเข้าคอร์สลดน้ำหนัก: เพิ่ม flex-direction: row !important บังคับเรียงแนวนอน!
       pPage.innerHTML = `
         <div class="filter-bar" style="display: flex; flex-direction: row !important; gap: 12px; flex-wrap: wrap; align-items: center; position: sticky; top: 52px; z-index: 40; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-radius: 8px; padding: 12px 16px; border: 1px solid var(--border); margin-bottom: 16px; width: 100%;">
           <div style="flex: 1 1 200px; position: relative; min-width: 180px;">
@@ -2956,6 +2955,7 @@ window.openManual = function() {
       if (window.renderTable) window.renderTable();
     }, 100);
   };
-</script> 
+</script>
+ 
 </body>
 </html>
