@@ -603,7 +603,6 @@ h6 {
 
 .filter-bar input::placeholder {
   color: var(--text-muted);
-  font-weight: 400;
 }
 
 .filter-bar input:hover {
@@ -1480,7 +1479,6 @@ body.modal-open {
   border-radius: var(--r-lg);
   padding: 48px 40px;
   width: 100%;
-  max-width: 400px;
   box-shadow: var(--shadow-lg);
   animation: fadeUp 0.3s ease;
   border: 1px solid var(--border);
@@ -1833,11 +1831,73 @@ body.modal-open {
     left: 16px;
     padding: 16px;
     justify-content: center;
-  }
+  
+
+
+    /* ========================================================= */
+/* 🌟 COMPACT ENTERPRISE THEME (ชุดโค้ดยุบสเกลหน้าจอให้พอดีตา) */
+/* ========================================================= */
+
+/* 1. ปรับสเกลฟอนต์รวมทั้งเว็บให้พอดีตา */
+html, body {
+  font-size: 14px !important;
 }
 
-@media (max-width: 400px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
+/* 2. ปรับความกว้าง Sidebar และความสูง Topbar */
+:root {
+  --sidebar-w: 220px !important;
+}
+.topbar {
+  height: 58px !important;
+  padding: 10px 32px !important;
+}
+
+/* 3. ลดขนาดและความกว้างของเมนูด้านซ้าย (Sidebar) */
+.sidebar-brand {
+  padding: 16px 20px !important;
+  gap: 12px !important;
+}
+.sidebar-nav {
+  padding: 12px 12px !important;
+  gap: 4px !important;
+}
+.nav-item {
+  padding: 10px 14px !important;
+  gap: 12px !important;
+  font-size: 14px !important;
+}
+
+/* 4. ลดขนาดการ์ดภาพรวมสีดำ (Executive Summary) */
+.exec-summary {
+  padding: 20px 24px !important;
+  margin-bottom: 20px !important;
+  gap: 20px !important;
+}
+.exec-summary-icon {
+  padding: 14px !important;
+  font-size: 2rem !important;
+  border-radius: 16px !important;
+}
+
+/* 5. ลดขนาดการ์ดสถิติ 4 ช่อง (KPI Cards) ให้กะทัดรัด */
+.stat-card {
+  padding: 16px 20px !important;
+  gap: 16px !important;
+}
+.stat-icon {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 12px !important;
+  font-size: 1.35rem !important;
+}
+.stat-value {
+  font-size: 28px !important;
+}
+
+/* 6. ปรับขนาดความสูงตารางข้อมูลนักศึกษาให้กระชับขึ้น */
+th, td {
+  padding: 10px 16px !important;
+}
   }
+  
 }

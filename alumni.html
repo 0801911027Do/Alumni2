@@ -25,7 +25,7 @@
       font-family: "Sarabun", sans-serif;
       background: var(--bg);
       min-height: 100vh;
-      font-size: 15px; 
+      font-size: 14px; 
       color: var(--text);
       -webkit-font-smoothing: antialiased;
       line-height: 1.5; 
@@ -78,7 +78,7 @@
       --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
       --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.025);
 
-      --sidebar-w: 240px; 
+      --sidebar-w: 220px; 
       --r-sm: 6px;                 
       --r-md: 10px;              
       --r-lg: 16px;              
@@ -364,10 +364,186 @@
 
       #toast { bottom: 85px; right: 16px; left: 16px; padding: 16px; justify-content: center; }
     }
-    
-    @media (max-width: 400px) {
-      .stats-grid { grid-template-columns: 1fr; }
-    }
+    /* ========================================================= */
+/* 🚀 ULTRA-COMPACT PRO THEME (ชุดโค้ดยุบสเกลแบบกะทัดรัดพิเศษ) */
+/* ========================================================= */
+
+/* 1. ปรับฟอนต์พื้นฐานให้เล็กลงแบบ Pro Dashboard (13px) */
+html, body {
+  font-size: 13px !important;
+}
+
+/* 2. ลดความกว้าง Sidebar และความสูง Topbar ให้บางเฉียบ */
+:root {
+  --sidebar-w: 200px !important; /* เดิม 220px เหลือ 200px */
+}
+.topbar {
+  height: 52px !important;       /* เดิม 58px เหลือ 52px */
+  padding: 8px 24px !important;
+}
+.topbar h2 {
+  font-size: 18px !important;
+}
+
+/* 3. กระชับเมนูด้านซ้าย (Sidebar) และลดขนาดโลโก้ */
+.sidebar-brand {
+  padding: 12px 16px !important;
+  gap: 10px !important;
+}
+.sidebar-brand .logo {
+  width: 32px !important;
+  height: 32px !important;
+}
+.brand-text h1 {
+  font-size: 16px !important;
+}
+.sidebar-nav {
+  padding: 8px !important;
+  gap: 2px !important;
+}
+.nav-item {
+  padding: 8px 12px !important;
+  gap: 10px !important;
+  font-size: 13px !important;
+  border-radius: 6px !important;
+}
+.nav-icon {
+  font-size: 1.1rem !important;
+}
+
+/* 4. ยุบขนาดการ์ดสรุปผลสีดำด้านบน (Executive Summary) */
+.exec-summary {
+  padding: 16px 20px !important;
+  margin-bottom: 16px !important;
+  gap: 16px !important;
+}
+.exec-summary-icon {
+  padding: 10px !important;
+  font-size: 1.5rem !important;
+  border-radius: 12px !important;
+  width: 44px !important;
+  height: 44px !important;
+}
+.exec-summary-text h3 {
+  font-size: 18px !important;
+  margin-bottom: 4px !important;
+}
+
+/* 5. ยุบขนาดการ์ดตัวเลข 4 ช่อง (KPI Cards) ให้พอดีตา */
+.stats-grid {
+  gap: 12px !important;
+  margin-bottom: 16px !important;
+}
+.stat-card {
+  padding: 14px 16px !important;
+  gap: 12px !important;
+  border-radius: 12px !important;
+}
+.stat-icon {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 10px !important;
+  font-size: 1.2rem !important;
+}
+.stat-value {
+  font-size: 24px !important; /* เดิม 32px ลดเหลือ 24px */
+}
+.stat-label, .stat-sub {
+  font-size: 12px !important;
+}
+
+/* 6. ปรับขนาดกรอบและการ์ดกราฟต่างๆ ให้บางลง */
+.grid-2-col, .chart-grid {
+  gap: 16px !important;
+  margin-bottom: 16px !important;
+}
+.card-header {
+  padding: 12px 16px !important;
+  font-size: 14.5px !important;
+}
+.card-body {
+  padding: 16px !important;
+}
+.chart-wrapper {
+  height: 260px !important; /* ลดความสูงกราฟลงจาก 320px เหลือ 260px */
+}
+
+/* 7. ยุบความสูงแถวในตารางข้อมูลนักศึกษาให้แน่นกระชับแบบ Excel */
+th {
+  padding: 10px 14px !important;
+  font-size: 12px !important;
+}
+td {
+  padding: 8px 14px !important; /* ลด padding บนล่างเหลือแค่ 8px */
+  font-size: 13px !important;
+}
+.badge {
+  padding: 4px 10px !important;
+  font-size: 12px !important;
+}
+.btn {
+  padding: 8px 14px !important;
+  font-size: 13px !important;
+}
+.btn-sm {
+  padding: 6px 10px !important;
+  font-size: 12px !important;
+}
+
+/* ========================================================= */
+/* 🗄️ ULTRA-COMPACT TABLE (ชุดโค้ดบีบอัดแถวตารางฐานข้อมูล) */
+/* ========================================================= */
+
+/* 1. บีบ Padding ของแถวในตารางให้แคบที่สุด */
+.table-wrap td {
+  padding: 6px 12px !important; 
+}
+.table-wrap th {
+  padding: 10px 12px !important;
+}
+
+/* 2. ลดระยะห่างระหว่างบรรทัด (Line-height) ภายในเซลล์ตาราง */
+.table-wrap td div {
+  line-height: 1.3 !important; 
+}
+
+/* 3. ลดระยะขอบ (Margin) ของข้อความย่อยๆ ที่ซ้อนกันในตาราง */
+.table-wrap td > div > div {
+  margin-top: 2px !important;
+  margin-bottom: 2px !important;
+}
+
+/* 4. ย่อขนาดป้ายสถานะ (Badge) ให้พอดีกับแถวที่บางลง */
+.table-wrap .badge {
+  padding: 3px 8px !important;
+  font-size: 11.5px !important;
+}
+
+/* 5. ย่อขนาดปุ่ม "ดูข้อมูล" และ "แก้ไข" ท้ายตาราง */
+.td-actions .btn-sm {
+  padding: 4px 10px !important;
+  font-size: 12px !important;
+}
+/* ========================================================= */
+/* 🔍 STICKY SEARCH BAR PRO (ปลดล็อกกรงกั้น ให้ค้นหาเลื่อนตามจอ) */
+/* ========================================================= */
+
+/* 1. ปลดล็อกคำสั่ง overflow: auto ที่คอยกักขัง position: sticky ใน .content */
+.content {
+  overflow: visible !important;
+}
+
+/* 2. สั่งให้กล่องค้นหาเกาะติดด้านบน ต่อจากใต้แถบ Topbar พอดี */
+.filter-bar {
+  position: sticky !important;
+  top: 54px !important;       /* ระยะเกาะติด (ปรับให้ชิดขอบล่างของ Topbar พอดี) */
+  z-index: 40 !important;     /* ลอยเหนือแถวตาราง แต่ยังอยู่ใต้ Topbar (z-index: 50) */
+  background: rgba(255, 255, 255, 0.95) !important; /* พื้นหลังขาวโปร่งแสง */
+  backdrop-filter: blur(12px) !important;           /* เอฟเฟกต์เบลอฉากหลัง Glassmorphism */
+  -webkit-backdrop-filter: blur(12px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important; /* เงาบางๆ ให้ดูเป็นมิติลอยเหนือตาราง */
+  margin-bottom: 16px !important;
+}
   </style>
 </head>
 
@@ -414,12 +590,12 @@
   <main id="app" class="hidden">
     <aside class="sidebar">
       <div class="sidebar-brand">
-        <div class="logo">
-          <i data-lucide="graduation-cap" style="width: 24px; height: 24px"></i>
+        <div class="logo" style="background: transparent; box-shadow: none;">
+          <img src="LogoPim.png" alt="PIM Logo" style="width: 36px; height: 36px; object-fit: contain;" />
         </div>
         <div class="brand-text">
           <h1>ET PIM</h1>
-          <p>Student Lifecycle</p>
+          <p>Student Management System</p>
         </div>
       </div>
       <nav class="sidebar-nav" id="sideNav"></nav>
@@ -1570,19 +1746,40 @@ window.renderDash = function() {
     <div class="stats-grid fade-in">
       ${[["clock", "ระยะเวลาเฉลี่ยหางานหลังจบ", g, `เร็วที่สุด: <strong style="color:var(--warning)">${fastestText}</strong>`, "var(--warning)", "var(--warning-soft)", ""], 
          ["book", "กำลังศึกษาอยู่", current.length, "คน", "var(--info)", "var(--info-soft)", "window.viewDashStatus('กำลังศึกษา')"], 
-         ["plane", "ศึกษาต่อ", `${furtherStudy.length}`, "คน", "var(--accent)", "var(--accent-soft)", "window.viewDashStatus('ศึกษาต่อ')"], 
+         ["plane", "ศึกษาต่อ(ปริญญาโท/เอก)", `${furtherStudy.length}`, "คน", "var(--accent)", "var(--accent-soft)", "window.viewDashStatus('ศึกษาต่อ')"], 
          ["shield-alert", "สถานะอื่นๆ", unavailable.length, "คน", "#D97706", "#FEF3C7", "window.viewDashStatus('ติดภารกิจ')"]
         ].map(([ic, ti, va, su, co, bg, fn]) => `<div class="stat-card" ${fn ? `onclick="${fn}"` : ''}><div class="stat-icon" style="background:${bg};color:${co};"><i data-lucide="${ic}"></i></div><div style="flex:1;"><div class="stat-label">${ti}</div><div class="stat-value" style="color:${co}">${va}</div><div class="stat-sub">${su}</div></div>${fn ? '<div class="click-hint"><i data-lucide="mouse-pointer-click" style="width:12px;"></i></div>' : ''}</div>`).join("")}
     </div>
     <div class="grid-2-col fade-in">
-      <div class="card"><div class="card-header">สัดส่วนสถานะนักศึกษาทั้งหมด</div><div class="card-body" style="display:flex;flex-direction:column;gap:16px;">${[
+     <div class="card">
+        <div class="card-header">สัดส่วนสถานะนักศึกษาทั้งหมด</div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:10px;padding:16px 24px;">${[
           { l: "ทำงานแล้ว (รวมฟรีแลนซ์)", n: employed.length, c: "var(--success)", fn: "window.viewDashStatus('ทำงาน')" }, 
           { l: "ศึกษาต่อ (รวมต่างประเทศ)", n: furtherStudy.length, c: "var(--accent)", fn: "window.viewDashStatus('ศึกษาต่อ')" }, 
           { l: "กำลังศึกษาอยู่", n: current.length, c: "var(--info)", fn: "window.viewDashStatus('กำลังศึกษา')" }, 
           { l: "อยู่ระหว่างหางาน / ว่างงาน", n: unemployed.length, c: "var(--warning)", fn: "window.viewDashStatus('ว่างงาน')" }
-          ].map((e) => { const d = total ? Math.round((e.n / total) * 100) : 0; return `<div class="clickable-item branch-stat-item" onclick="${e.fn}"><div style="display:flex;justify-content:space-between;font-size:15px;font-weight:700;margin-bottom:8px;"><span>${e.l}</span><span class="click-hint"><i data-lucide="mouse-pointer-click" style="width:12px;"></i> ดูรายชื่อ</span></div><div style="display:flex;gap:16px;margin-bottom:12px;font-size:14px;"><div style="flex:1;"><div style="color:var(--text-muted);font-weight:600;">จำนวน</div><div style="font-size:20px;font-weight:800;color:var(--text-bold);">${e.n} <span style="font-size:13px; font-weight:500;">คน</span></div></div><div style="flex:1;text-align:right;"><div style="color:${e.c};font-weight:600;">สัดส่วนรวม</div><div style="font-size:20px;font-weight:800;color:${e.c};">${d}%</div></div></div><div style="height:6px;background:var(--bg);border-radius:99px;overflow:hidden;"><div style="width:${d}%;height:100%;background:${e.c};border-radius:99px;"></div></div></div>`; }).join("")}</div></div>
-      <div class="card"><div class="card-header" style="display:flex; flex-direction:column; gap:16px; align-items:stretch;"><div style="font-size: 18px; display: flex; align-items: center;"><i data-lucide="building-2" style="width:20px; margin-right:8px; color:var(--primary);"></i> บริษัทรับเข้าทำงาน</div><div style="position: relative;"><i data-lucide="search" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); width: 18px; height: 18px;"></i><input type="search" id="dashCompanySearch" placeholder="ค้นหาบริษัท..." oninput="window.filterDashCompanies()" style="width: 100%; padding: 10px 16px 10px 42px; border-radius: 8px; border: 1px solid var(--border-hi); font-size: 14px; outline: none; background: var(--bg);" /></div></div><div class="card-body" style="height:480px;overflow-y:auto;padding:16px;display:grid;grid-template-columns:1fr;gap:12px;align-content:start;">${C.length ? (() => { const startIdx = (dashCompanyPage - 1) * 10; const pageItems = C.slice(startIdx, startIdx + 10); return pageItems.map((item, idx) => `<div class="person-item dash-company-item" data-name="${window.esc(item.name).toLowerCase()}" style="margin:0; padding:12px 16px;" onclick="window.openCompany('${esc(item.name)}')"><div class="flex flex-center gap-16"><div class="co-rank" style="background:var(--bg);color:var(--text-muted);width:32px;height:32px;border-radius:8px;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;">${startIdx + idx + 1}</div><span style="font-size:15px;font-weight:700;color:var(--text-bold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;">${esc(item.name)}</span></div><div class="flex flex-center gap-12"><span style="font-size:14px;font-weight:700;color:var(--primary); background:var(--primary-soft); padding:4px 10px; border-radius:12px;">${item.count} คน</span></div></div>`).join("") + `<div style="display:flex;gap:12px;justify-content:center;padding:12px;margin-top:8px;border-top:1px solid var(--border);"><button onclick="dashCompanyPage = Math.max(1, dashCompanyPage - 1); window.renderDash();" style="padding:6px 12px;border:1px solid var(--border);background:var(--surface);border-radius:6px;color:var(--text);font-size:13px;cursor:pointer;transition:all 0.2s;" ${dashCompanyPage <= 1 ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : 'onmouseover="this.style.background=\"var(--surface-hover)\"" onmouseout="this.style.background=\"var(--surface)\""'}><i data-lucide="chevron-left" style="width:16px;height:16px;display:inline;margin-right:4px;vertical-align:middle;"></i>ก่อนหน้า</button><span style="padding:6px 12px;color:var(--text-muted);font-size:13px;font-weight:700;">${dashCompanyPage} / ${Math.ceil(C.length / 10)}</span><button onclick="dashCompanyPage = Math.min(Math.ceil(${C.length} / 10), dashCompanyPage + 1); window.renderDash();" style="padding:6px 12px;border:1px solid var(--border);background:var(--surface);border-radius:6px;color:var(--text);font-size:13px;cursor:pointer;transition:all 0.2s;" ${dashCompanyPage >= Math.ceil(C.length / 10) ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : 'onmouseover="this.style.background=\"var(--surface-hover)\"" onmouseout="this.style.background=\"var(--surface)\""'}><i data-lucide="chevron-right" style="width:16px;height:16px;display:inline;margin-left:4px;vertical-align:middle;"></i>ถัดไป</button></div>`; })() : '<div class="empty-state" style="padding:48px;">ไม่พบข้อมูลบริษัท</div>'}<div id="dashCompanyEmpty" class="empty-state hidden" style="padding:32px;">ไม่พบชื่อบริษัทที่ค้นหา</div></div></div>
-    </div>
+          ].map((e) => { 
+            const d = total ? Math.round((e.n / total) * 100) : 0; 
+            return `
+            <div class="clickable-item branch-stat-item" style="padding: 12px 16px; margin: 0; border-radius: var(--r-md);" onclick="${e.fn}">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="width:8px; height:8px; border-radius:50%; background:${e.c}; display:inline-block; flex-shrink:0;"></span>
+                  <span style="font-size:14.5px; font-weight:700; color:var(--text-bold);">${e.l}</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="font-size:14.5px; font-weight:800; color:var(--text-bold);">${e.n} <span style="font-size:12px; font-weight:500; color:var(--text-muted);">คน</span></span>
+                  <span style="font-size:13px; font-weight:800; color:${e.c}; background:var(--bg); padding:2px 8px; border-radius:99px; min-width:46px; text-align:center; border: 1px solid var(--border);">${d}%</span>
+                  <span class="click-hint" style="padding:2px 6px; font-size:11px;"><i data-lucide="mouse-pointer-click" style="width:12px;"></i></span>
+                </div>
+              </div>
+              <div style="height:5px; background:var(--bg); border-radius:99px; overflow:hidden;">
+                <div style="width:${d}%; height:100%; background:${e.c}; border-radius:99px; transition: width 0.5s ease;"></div>
+              </div>
+            </div>`; 
+          }).join("")}
+        </div>
+      </div>
     
     <div class="chart-grid fade-in" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;">
       <div class="card"><div class="card-header">กราฟจำนวนนักศึกษาแยกตามสาขา</div><div class="card-body"><div class="chart-wrapper" style="height:320px;"><canvas id="branchChart"></canvas></div></div></div>
@@ -1656,8 +1853,6 @@ window.renderTable = function() {
     let formattedPhone = e.phone;
     if(formattedPhone && formattedPhone.length === 10) formattedPhone = formattedPhone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
 
-    const genderIcon = e.gender === 'ชาย' ? '<i data-lucide="mars" style="width:14px; color:#0ea5e9; display:inline-block; vertical-align:middle; margin-left:4px;"></i>' : (e.gender === 'หญิง' ? '<i data-lucide="venus" style="width:14px; color:#ec4899; display:inline-block; vertical-align:middle; margin-left:4px;"></i>' : '');
-
     return `<tr class="fade-in" onclick="window.openDetail('${window.esc(e.idCard)}')">
       <td style="color:var(--text-muted);font-weight:700;text-align:center;">${startIndex + t + 1}</td>
       <td>
@@ -1667,7 +1862,7 @@ window.renderTable = function() {
       <td>
         <div style="display:flex; align-items:center; gap:12px;">
           <div style="display:flex;flex-direction:column;">
-            <div style="font-weight:800;font-size:15px;color:var(--text-bold);display:flex;align-items:center;">${window.esc(e.prefix)}${window.esc(e.nameTH)} ${window.esc(e.surnameTH)} ${genderIcon}</div>
+            <div style="font-weight:800;font-size:15px;color:var(--text-bold);display:flex;align-items:center;">${window.esc(e.prefix)}${window.esc(e.nameTH)} ${window.esc(e.surnameTH)} </div>
             <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">เลขบัตร ปชช: ${window.esc(e.idCard)}</div>
           </div>
         </div>
@@ -2575,5 +2770,193 @@ window.openManual = function() {
     window.openModal('modalManual');
 };
   </script>
+
+ <!-- ========================================================= -->
+<!-- 🏢 PARTNER COMPANIES MODULE (V.5 หุ่นเอว S เพรียวบาง!) -->
+<!-- ========================================================= -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    if (!document.getElementById("pagePartners")) {
+      const pPage = document.createElement("div");
+      pPage.id = "pagePartners";
+      pPage.className = "hidden content fade-in";
+      pPage.style.display = "flex";
+      pPage.style.flexDirection = "column";
+      
+      pPage.innerHTML = `
+        <div class="filter-bar" style="display: flex; flex-direction: row !important; gap: 12px; flex-wrap: wrap; align-items: center; position: sticky; top: 52px; z-index: 40; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-radius: 8px; padding: 12px 16px; border: 1px solid var(--border); margin-bottom: 16px; width: 100%;">
+          <div style="flex: 1 1 200px; position: relative; min-width: 180px;">
+            <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--text-muted); pointer-events: none;"></i>
+            <input type="text" id="partnerSearchInput" placeholder="ค้นหาชื่อบริษัท, สถานประกอบการ..." oninput="window.renderPartners()" style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 6px; border: 1px solid var(--border); font-family: inherit; font-size: 13px; outline: none; background: var(--surface); color: var(--text);" />
+          </div>
+          <select id="partnerBranchFilter" onchange="window.renderPartners()" style="color: var(--primary); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); font-family: inherit; font-size: 13px; font-weight: 600; outline: none; background: var(--surface); cursor: pointer;">
+            <option value="">✨ ทุกสาขาวิชา</option>
+            <option value="CAI">CAI</option><option value="CYB">CYB</option><option value="DIT">DIT</option>
+            <option value="AME">AME</option><option value="RAE">RAE</option>
+          </select>
+          <span id="partnerCount" style="font-size: 12.5px; font-weight: 800; color: var(--primary); background: var(--primary-soft); padding: 6px 12px; border-radius: 99px; white-space: nowrap;">กำลังคำนวณ...</span>
+        </div>
+        <div class="table-wrap" style="flex: 1; overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+              <tr style="background: var(--bg); border-bottom: 2px solid var(--border); color: var(--text-bold); font-size: 12.5px;">
+                <th style="width: 40px; text-align: center; padding: 10px 12px;">#</th>
+                <th style="padding: 10px 12px; min-width: 200px;">ชื่อบริษัท / สถานประกอบการ</th>
+                <th style="padding: 10px 12px; min-width: 130px;">สาขาที่รับ</th>
+                <th style="text-align: center; padding: 10px 12px; width: 110px;">จำนวนรุ่นที่รับ</th>
+                <th style="text-align: center; padding: 10px 12px; width: 110px;">ยอดรับรวม</th>
+                <th style="text-align: center; padding: 10px 12px; width: 140px;">สถานะความร่วมมือ</th>
+                <th style="text-align: center; padding: 10px 12px; width: 100px;">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="partnerTbody"></tbody>
+          </table>
+        </div>
+      `;
+      const pageStudents = document.getElementById("pageStudents") || document.querySelector(".content");
+      if (pageStudents) pageStudents.after(pPage);
+    }
+  });
+
+  const originalInitApp = window.initApp;
+  window.initApp = function() {
+    if (originalInitApp) originalInitApp();
+    const sideNav = document.getElementById("sideNav");
+    if (sideNav && !document.getElementById("nav-partners")) {
+      const partnerBtn = document.createElement("a");
+      partnerBtn.href = "#partners";
+      partnerBtn.id = "nav-partners";
+      partnerBtn.className = "nav-item";
+      partnerBtn.setAttribute("onclick", "window.navTo('partners'); return false;");
+      partnerBtn.innerHTML = `<div class="nav-icon"><i data-lucide="building-2"></i></div><span class="nav-label">บริษัทพาร์ทเนอร์</span>`;
+      sideNav.appendChild(partnerBtn);
+      if (window.lucide) lucide.createIcons();
+    }
+  };
+
+  const originalNavTo = window.navTo;
+  window.navTo = function(e) {
+    if (originalNavTo) originalNavTo(e);
+    document.querySelectorAll(".nav-item").forEach(t => {
+      t.classList.toggle("active", t.getAttribute("onclick")?.includes(`'${e}'`));
+    });
+    const pagePartners = document.getElementById("pagePartners");
+    if (pagePartners) pagePartners.classList.toggle("hidden", e !== "partners");
+    if (e === "partners") {
+      const titleEl = document.getElementById("topbarTitle");
+      if (titleEl) titleEl.textContent = "รายชื่อบริษัทพาร์ทเนอร์";
+      window.renderPartners();
+    }
+  };
+
+  window.renderPartners = function() {
+    const searchVal = (document.getElementById("partnerSearchInput")?.value || "").toLowerCase().trim();
+    const branchVal = document.getElementById("partnerBranchFilter")?.value || "";
+
+    const compMap = {};
+    const dataList = window.STUDENTS || window.alumniData || [];
+    dataList.forEach((s) => {
+      const branch = s.branch || "ET";
+      const batch = String(s.batchYear || s.batch || "67");
+      const records = [
+        { name: s.internY1_711Branch || s.internY1?.company, type: "intern" },
+        { name: s.internY2_Company || s.internY2?.company, type: "intern" },
+        { name: s.internY3_Company || s.internY3?.company, type: "intern" },
+        { name: s.internY4_Company || s.internY4?.company, type: "intern" },
+        { name: s.jobCompany, type: "job" }
+      ];
+
+      records.forEach((rec) => {
+        if (!rec || !rec.name || typeof rec.name !== 'string') return;
+        let cName = rec.name.trim();
+        if (["-", "ไม่มี", "ไม่ได้ฝึก", "ว่างงาน", "ไม่ระบุ", ""].includes(cName)) return;
+        if (cName.includes("ธุรกิจส่วนตัว") || cName.includes("ครอบครัว")) return;
+        
+        const key = cName.toLowerCase();
+        if (!compMap[key]) {
+          compMap[key] = { displayName: cName, branches: new Set(), batches: new Set(), internCount: 0, jobCount: 0 };
+        }
+        compMap[key].branches.add(branch);
+        compMap[key].batches.add(batch);
+        if (rec.type === "job") compMap[key].jobCount++;
+        else compMap[key].internCount++;
+      });
+    });
+
+    let compList = Object.values(compMap).map((c) => {
+      const total = c.internCount + c.jobCount;
+      let badge = "";
+      if (c.jobCount > 0 && c.internCount > 0) badge = `<span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:800;border:1px solid #bbf7d0;display:inline-block;">🟢 พันธมิตรหลัก</span>`;
+      else if (c.jobCount > 0) badge = `<span style="background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:800;border:1px solid #bae6fd;display:inline-block;">🔵 รับบรรจุทำงาน</span>`;
+      else badge = `<span style="background:#fef9c3;color:#854d0e;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:800;border:1px solid #fde047;display:inline-block;">🟡 รับฝึกงาน</span>`;
+      
+      return { name: c.displayName, branches: Array.from(c.branches).sort(), batches: Array.from(c.batches).sort(), total, internCount: c.internCount, jobCount: c.jobCount, badge };
+    });
+
+    compList.sort((a, b) => b.total - a.total);
+    if (searchVal) compList = compList.filter((c) => c.name.toLowerCase().includes(searchVal));
+    if (branchVal) compList = compList.filter((c) => c.branches.some(b => String(b).includes(branchVal)));
+
+    const tbody = document.getElementById("partnerTbody");
+    const countEl = document.getElementById("partnerCount");
+    if (countEl) countEl.innerText = `พบพาร์ทเนอร์ ${compList.length} แห่ง`;
+    if (!tbody) return;
+
+    if (compList.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted);font-weight:600;font-size:13px;">ไม่พบข้อมูลบริษัทพาร์ทเนอร์</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = compList.map((c, idx) => {
+      const safeName = (c.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      const branchBadges = c.branches.map(b => `<span style="font-size:11px;font-weight:800;background:var(--bg);padding:2px 6px;border-radius:4px;border:1px solid var(--border);color:var(--primary);display:inline-block;margin:1px;">${b}</span>`).join("");
+      const batchText = c.batches.join(", ");
+      
+      return `
+      <tr style="border-bottom: 1px solid var(--border); transition: background 0.2s;" onmouseover="this.style.background='var(--surface-hover)'" onmouseout="this.style.background='transparent'">
+        <td style="text-align:center;color:var(--text-muted);font-weight:700;padding:8px 12px;font-size:12px;">${idx + 1}</td>
+        <td style="padding:8px 12px;">
+          <div style="font-weight:800;font-size:13.5px;color:var(--text-bold);">${c.name}</div>
+          <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">ฝึกงาน ${c.internCount} ครั้ง | บรรจุ ${c.jobCount} คน</div>
+        </td>
+        <td style="padding:8px 12px;">${branchBadges}</td>
+        <td style="text-align:center;padding:8px 12px;">
+          <span style="font-weight:800;color:var(--text-bold);font-size:13px;">${c.batches.length} รุ่น</span>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">(รุ่น ${batchText})</div>
+        </td>
+        <td style="text-align:center;padding:8px 12px;"><span style="font-size:13px;font-weight:800;color:var(--success);background:#ecfdf5;padding:2px 10px;border-radius:99px;border:1px solid #a7f3d0;display:inline-block;">${c.total} คน</span></td>
+        <td style="text-align:center;padding:8px 12px;">${c.badge}</td>
+        <td style="text-align:center;padding:8px 12px;">
+          <button class="btn btn-sm" style="background:var(--surface);border:1px solid var(--border);cursor:pointer;padding:4px 10px;border-radius:6px;font-weight:600;color:var(--text-bold);font-size:12px;" onclick="window.openCompanyStudents('${safeName}')">
+            <i data-lucide="eye" style="width:13px;height:13px;display:inline-block;vertical-align:middle;margin-right:2px;"></i> ดูข้อมูล
+          </button>
+        </td>
+      </tr>
+    `;
+    }).join("");
+
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.openCompanyStudents = function(cName) {
+    window.navTo("students");
+    setTimeout(() => {
+      const compSel = document.getElementById("filterCompany");
+      if (compSel) {
+        let found = false;
+        for (let i = 0; i < compSel.options.length; i++) {
+          if (compSel.options[i].value === cName) { compSel.selectedIndex = i; found = true; break; }
+        }
+        if (!found) {
+          const sInput = document.getElementById("searchInput");
+          if (sInput) sInput.value = cName;
+        }
+      }
+      if (window.renderTable) window.renderTable();
+    }, 100);
+  };
+</script>
+ 
+
 </body>
 </html>
