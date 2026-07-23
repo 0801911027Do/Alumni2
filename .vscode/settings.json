@@ -1,4 +1,11 @@
 {
-    "liveServer.settings.port": 5502,
-    "workbench.browser.enableChatTools": true
+  "liveServer.settings.port": 5503,
+  "workbench.browser.enableChatTools": true,
+  "python-envs.pythonProjects": [
+    {
+      "path": ".vscode",
+      "envManager": "ms-python.python:venv",
+      "packageManager": "ms-python.python:pip"
+    }
+  ]
 }

@@ -1,0 +1,66 @@
+{
+  "timeZone": "Asia/Bangkok",
+  "dependencies": {},
+  "webapp": {
+    "executeAs": "USER_DEPLOYING",
+    "access": "ANYONE_ANONYMOUS"
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "sheets": {
+    "macros": [
+      {
+        "menuName": "processLogin",
+        "functionName": "processLogin"
+      },
+      {
+        "menuName": "processGetData",
+        "functionName": "processGetData"
+      },
+      {
+        "menuName": "setupHeadersOnly",
+        "functionName": "setupHeadersOnly"
+      },
+      {
+        "menuName": "processEdit",
+        "functionName": "processEdit"
+      },
+      {
+        "menuName": "processDelete",
+        "functionName": "processDelete"
+      },
+      {
+        "menuName": "processAddData",
+        "functionName": "processAddData"
+      },
+      {
+        "menuName": "prepareRowData",
+        "functionName": "prepareRowData"
+      },
+      {
+        "menuName": "calculateAge",
+        "functionName": "calculateAge"
+      },
+      {
+        "menuName": "calculateDaysBetween",
+        "functionName": "calculateDaysBetween"
+      },
+      {
+        "menuName": "convertThaiToEng",
+        "functionName": "convertThaiToEng"
+      },
+      {
+        "menuName": "doGet",
+        "functionName": "doGet"
+      },
+      {
+        "menuName": "onOpen",
+        "functionName": "onOpen"
+      },
+      {
+        "menuName": "formatToShortDate",
+        "functionName": "formatToShortDate"
+      }
+    ]
+  }
+}

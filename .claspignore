@@ -1,0 +1,8 @@
+# Ignore all files by default
+*
+# Allow backend files
+!code.js
+!appsscript.json
+!ตำแหน่ง.js
+!องศ์กร.js
+
